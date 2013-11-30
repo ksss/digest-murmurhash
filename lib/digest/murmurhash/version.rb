@@ -1,0 +1,5 @@
+module Digest
+  class MurmurHash
+    VERSION = "0.0.1"
+  end
+end
