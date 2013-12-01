@@ -14,7 +14,7 @@ require 'rake/extensiontask'
 spec = Bundler::GemHelper.gemspec
 Rake::ExtensionTask.new('murmurhash', spec) do |ext|
   ext.ext_dir = 'ext/digest/murmurhash'
-  ext.lib_dir = 'lib/digest/murmurhash'
+  ext.lib_dir = 'lib/digest'
 end
 
 

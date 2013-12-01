@@ -1,11 +1,12 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'digest/murmurhash/version'
+# require 'digest/murmurhash/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "digest-murmurhash"
-  spec.version       = Digest::MurmurHash::VERSION
+  # FIXME replace Digest::MurmurHash::VERSION but raise NameError
+  spec.version       = "0.0.1"
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
   spec.description   = %q{The MurmurHash.}
