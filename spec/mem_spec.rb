@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe Digest::MurmurHash do
   it "gc safe" do
     murmur = Digest::MurmurHash.new
