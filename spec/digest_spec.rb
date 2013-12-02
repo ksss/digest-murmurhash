@@ -53,4 +53,8 @@ describe Digest::MurmurHash do
     # Therefore `block_length` return chunk size for calculate MurmurHash (equal 4) 
     expect(murmur.block_length).to eq(4);
   end
+
+  it "to_i" do
+    expect(murmur.update("murmurhash").to_i).to eq(0xc709abd5);
+  end
 end

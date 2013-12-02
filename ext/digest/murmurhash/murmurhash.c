@@ -81,16 +81,13 @@ murmur_update(VALUE self, VALUE str)
 	return self;
 }
 
-static VALUE
-murmur_finish(VALUE self)
+static uint32_t
+murmur_hash_process(murmur_t* ptr)
 {
 	const uint32_t m = 0x5bd1e995;
 	const uint8_t r = 16;
 	uint32_t length, h;
 	const char* p;
-	uint8_t digest[MURMURHASH_DIGEST_LENGTH];
-
-	MURMURHASH(self, ptr);
 
 	p = RSTRING_PTR(ptr->data);
 	length = RSTRING_LEN(ptr->data);
@@ -120,6 +117,18 @@ murmur_finish(VALUE self)
 	h *= m;
 	h ^= h >> 17;
 
+	return h;
+}
+
+static VALUE
+murmur_finish(VALUE self)
+{
+	uint32_t h;
+	uint8_t digest[MURMURHASH_DIGEST_LENGTH];
+	MURMURHASH(self, ptr);
+
+	h = murmur_hash_process(ptr);
+
 	digest[0] = (h >> 24);
 	digest[1] = (h >> 16);
 	digest[2] = (h >> 8);
@@ -138,6 +147,13 @@ static VALUE
 murmur_block_length(VALUE self)
 {
 	return INT2NUM(MURMURHASH_BLOCK_LENGTH);
+}
+
+static VALUE
+murmur_to_i(VALUE self)
+{
+	MURMURHASH(self, ptr);
+	return UINT2NUM(murmur_hash_process(ptr));
 }
 
 void
@@ -161,4 +177,6 @@ Init_murmurhash()
 	rb_define_private_method(cDigest_MurmurHash, "finish", murmur_finish, 0);
 	rb_define_method(cDigest_MurmurHash, "digest_length", murmur_digest_length, 0);
 	rb_define_method(cDigest_MurmurHash, "block_length", murmur_block_length, 0);
+
+	rb_define_method(cDigest_MurmurHash, "to_i", murmur_to_i, 0);
 }
