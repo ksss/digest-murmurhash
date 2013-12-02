@@ -6,7 +6,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 Gem::Specification.new do |spec|
   spec.name          = "digest-murmurhash"
   # FIXME replace Digest::MurmurHash::VERSION but raise NameError
-  spec.version       = "0.0.1"
+  spec.version       = "0.1.0"
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
   spec.description   = %q{Digest::MurmurHash is a class of use algorithm MurmurHash(MurmurHash1 32-bit) desiged by Austin Appleby.}
