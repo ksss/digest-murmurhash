@@ -12,7 +12,9 @@
 ID id_concat;
 
 typedef struct {
-	VALUE data;
+	char* data;
+	char* p;
+	size_t memsize;
 } murmur_t;
 
 #define MURMURHASH(self, name) \
@@ -25,19 +27,20 @@ typedef struct {
 static void
 murmur_init(murmur_t* ptr)
 {
-	ptr->data = rb_str_new("", 0);
+	ptr->data = (char*) malloc(sizeof(char) * 64);
+	ptr->p = ptr->data;
+	ptr->memsize = 64;
 }
 
 static void
 murmur_mark(murmur_t* ptr)
 {
-	rb_gc_mark(ptr->data);
 }
 
 static void
 murmur_free(murmur_t* ptr)
 {
-	xfree(ptr);
+	free(ptr->data);
 }
 
 static VALUE
@@ -52,6 +55,7 @@ static VALUE
 murmur_initialize_copy(VALUE self, VALUE obj)
 {
 	murmur_t *pctx1, *pctx2;
+	size_t data_len;
 
 	if (self == obj) return self;
 
@@ -59,7 +63,13 @@ murmur_initialize_copy(VALUE self, VALUE obj)
 
 	Data_Get_Struct(self, murmur_t, pctx1);
 	Data_Get_Struct(obj, murmur_t, pctx2);
-	memcpy(pctx1, pctx2, sizeof(murmur_t));
+	murmur_init(pctx2);
+
+	data_len = pctx1->p - pctx1->data;
+	pctx2->data = (char*) realloc(pctx2->data, sizeof(char) * pctx1->memsize);
+	memcpy(pctx2->data, pctx1->data, data_len);
+	pctx2->p = pctx2->data + data_len;
+	pctx2->memsize = pctx1->memsize;
 
 	return self;
 }
@@ -68,16 +78,35 @@ static VALUE
 murmur_reset(VALUE self)
 {
 	MURMURHASH(self, ptr);
-	murmur_init(ptr);
+	ptr->p = ptr->data;
 	return self;
 }
 
 static VALUE
 murmur_update(VALUE self, VALUE str)
 {
+	size_t data_len, str_len, require, newsize;
+	const char* str_p;
 	MURMURHASH(self, ptr);
+
 	StringValue(str);
-	rb_funcall(ptr->data, id_concat, 1, str);
+	str_p = RSTRING_PTR(str);
+	str_len = RSTRING_LEN(str);
+	data_len = (ptr->p - ptr->data);
+	require = data_len + str_len;
+	if (ptr->memsize < require) {
+		newsize = ptr->memsize;
+		while (newsize < require) {
+			newsize *= 2;
+		}
+		ptr->data = realloc(ptr->data, sizeof(char) * newsize);
+		ptr->p = ptr->data + data_len;
+		ptr->memsize = newsize;
+	}
+	printf("%s\n", ptr->data);
+	memcpy(ptr->p, str_p, str_len);
+	ptr->p += str_len;
+	// rb_funcall(ptr->data, id_concat, 1, str);
 	return self;
 }
 
@@ -89,8 +118,8 @@ murmur_hash_process(murmur_t* ptr)
 	uint32_t length, h;
 	const char* p;
 
-	p = RSTRING_PTR(ptr->data);
-	length = RSTRING_LEN(ptr->data);
+	p = ptr->data;
+	length = ptr->p - ptr->data;
 	h = length * m;
 
 	while (4 <= length) {
