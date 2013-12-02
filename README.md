@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ksss/digest-murmurhash.png?branch=master)](https://travis-ci.org/ksss/digest-murmurhash)
 
-Digest::MurmurHash is a class use algorithm of MurmurHash(MurmurHash1 32-bit) desiged by Austin Appleby.
+Digest::MurmurHash is a class of use algorithm MurmurHash(MurmurHash1 32-bit) desiged by Austin Appleby.
 
 Digest::MurmurHash compliance Digest API of Ruby.
 
