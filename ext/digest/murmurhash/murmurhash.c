@@ -52,26 +52,25 @@ murmur_alloc(VALUE self)
 }
 
 static VALUE
-murmur_initialize_copy(VALUE self, VALUE obj)
+murmur_initialize_copy(VALUE copy, VALUE origin)
 {
-	murmur_t *pctx1, *pctx2;
+	murmur_t *ptr_copy, *ptr_origin;
 	size_t data_len;
 
-	if (self == obj) return self;
+	if (copy == origin) return copy;
 
-	rb_check_frozen(self);
+	rb_check_frozen(copy);
 
-	Data_Get_Struct(self, murmur_t, pctx1);
-	Data_Get_Struct(obj, murmur_t, pctx2);
-	murmur_init(pctx2);
+	Data_Get_Struct(copy, murmur_t, ptr_copy);
+	Data_Get_Struct(origin, murmur_t, ptr_origin);
 
-	data_len = pctx1->p - pctx1->data;
-	pctx2->data = (char*) realloc(pctx2->data, sizeof(char) * pctx1->memsize);
-	memcpy(pctx2->data, pctx1->data, data_len);
-	pctx2->p = pctx2->data + data_len;
-	pctx2->memsize = pctx1->memsize;
+	data_len = ptr_origin->p - ptr_origin->data;
+	ptr_copy->data = (char*) malloc(sizeof(char) * ptr_origin->memsize);
+	memcpy(ptr_copy->data, ptr_origin->data, data_len);
+	ptr_copy->p = ptr_copy->data + data_len;
+	ptr_copy->memsize = ptr_origin->memsize;
 
-	return self;
+	return copy;
 }
 
 static VALUE
@@ -103,10 +102,9 @@ murmur_update(VALUE self, VALUE str)
 		ptr->p = ptr->data + data_len;
 		ptr->memsize = newsize;
 	}
-	printf("%s\n", ptr->data);
 	memcpy(ptr->p, str_p, str_len);
 	ptr->p += str_len;
-	// rb_funcall(ptr->data, id_concat, 1, str);
+
 	return self;
 }
 
