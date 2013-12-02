@@ -51,13 +51,14 @@ murmur_alloc(VALUE self)
 static VALUE
 murmur_initialize_copy(VALUE self, VALUE obj)
 {
-	if (self == obj) return self;
+	murmur_t *pctx1, *pctx2;
 
-	MURMURHASH(self, pctx1);
-	MURMURHASH(obj, pctx2);
+	if (self == obj) return self;
 
 	rb_check_frozen(self);
 
+	Data_Get_Struct(self, murmur_t, pctx1);
+	Data_Get_Struct(obj, murmur_t, pctx2);
 	memcpy(pctx1, pctx2, sizeof(murmur_t));
 
 	return self;
