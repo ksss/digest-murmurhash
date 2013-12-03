@@ -201,6 +201,7 @@ Init_murmurhash()
 	rb_define_method(cDigest_MurmurHash, "initialize_copy", murmur_initialize_copy, 1);
 	rb_define_method(cDigest_MurmurHash, "reset", murmur_reset, 0);
 	rb_define_method(cDigest_MurmurHash, "update", murmur_update, 1);
+	rb_define_method(cDigest_MurmurHash, "<<", murmur_update, 1);
 	rb_define_private_method(cDigest_MurmurHash, "finish", murmur_finish, 0);
 	rb_define_method(cDigest_MurmurHash, "digest_length", murmur_digest_length, 0);
 	rb_define_method(cDigest_MurmurHash, "block_length", murmur_block_length, 0);

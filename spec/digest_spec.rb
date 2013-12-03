@@ -14,13 +14,9 @@ describe Digest::MurmurHash do
   end
 
   it "update and reset and hexdigest" do
-    murmur.update("m")
-    murmur.update("u")
-    murmur.update("r")
-    murmur.update("m")
-    murmur.update("u")
-    murmur.update("r")
-    murmur.update("hash")
+    murmur.update("m").update("u").update("r")
+    murmur << "m" << "u" << "r"
+    murmur << "hash"
     expect(murmur.hexdigest).to eq("c709abd5");
     expect(murmur.hexdigest).to eq("c709abd5");
     expect(murmur.hexdigest!).to eq("c709abd5");
