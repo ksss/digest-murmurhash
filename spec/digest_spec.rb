@@ -23,21 +23,22 @@ describe Digest::MurmurHash do
     expect(murmur.hexdigest).to eq("00000000");
   end
 
-  it "dup" do
-    murmur1 = Digest::MurmurHash.new
-    murmur2 = Digest::MurmurHash.new
-    murmur1.update("murmur")
-    murmur2 = murmur1.dup
-    murmur2.update("hash")
-    expect(murmur2.hexdigest).to eq("c709abd5")
-  end
-
   it "==" do
     ["", "murmur", "murmurhash" * 1024].each do |str|
       murmur1 = Digest::MurmurHash.new
       murmur2 = Digest::MurmurHash.new
       expect(murmur1.update(str) == murmur2.update(str)).to be_true
     end
+  end
+
+  it "dup" do
+    murmur1 = Digest::MurmurHash.new
+    murmur2 = Digest::MurmurHash.new
+    10.times {
+      murmur1 = murmur1.update("murmurhash" * 100).dup
+    }
+    murmur2.update(("murmurhash" * 100) * 10)
+    expect(murmur1 == murmur2).to be_true
   end
 
   it "length" do
