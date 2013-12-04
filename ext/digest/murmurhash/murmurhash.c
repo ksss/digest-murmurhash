@@ -7,12 +7,12 @@
 
 #define MURMURHASH_DIGEST_LENGTH 4
 #define MURMURHASH_BLOCK_LENGTH 4
-
+#define MURMURHASH_BUFFER_INIT 64
 
 ID id_concat;
 
 typedef struct {
-	char* data;
+	char* buffer;
 	char* p;
 	size_t memsize;
 } murmur_t;
@@ -27,9 +27,9 @@ typedef struct {
 static void
 murmur_init(murmur_t* ptr)
 {
-	ptr->data = (char*) malloc(sizeof(char) * 64);
-	ptr->p = ptr->data;
-	ptr->memsize = 64;
+	ptr->buffer = (char*) malloc(sizeof(char) * MURMURHASH_BUFFER_INIT);
+	ptr->p = ptr->buffer;
+	ptr->memsize = MURMURHASH_BUFFER_INIT;
 }
 
 static void
@@ -40,7 +40,7 @@ murmur_mark(murmur_t* ptr)
 static void
 murmur_free(murmur_t* ptr)
 {
-	free(ptr->data);
+	free(ptr->buffer);
 }
 
 static VALUE
@@ -55,7 +55,7 @@ static VALUE
 murmur_initialize_copy(VALUE copy, VALUE origin)
 {
 	murmur_t *ptr_copy, *ptr_origin;
-	size_t data_len;
+	size_t buffer_len;
 
 	if (copy == origin) return copy;
 
@@ -64,15 +64,15 @@ murmur_initialize_copy(VALUE copy, VALUE origin)
 	Data_Get_Struct(copy, murmur_t, ptr_copy);
 	Data_Get_Struct(origin, murmur_t, ptr_origin);
 
-	data_len = ptr_origin->p - ptr_origin->data;
+	buffer_len = ptr_origin->p - ptr_origin->buffer;
 
 	if (ptr_copy->memsize < ptr_origin->memsize) {
-		ptr_copy->data = (char*) realloc(ptr_copy->data, sizeof(char) * ptr_origin->memsize);
+		ptr_copy->buffer = (char*) realloc(ptr_copy->buffer, sizeof(char) * ptr_origin->memsize);
 		ptr_copy->memsize = ptr_origin->memsize;
 	}
 
-	memcpy(ptr_copy->data, ptr_origin->data, data_len);
-	ptr_copy->p = ptr_copy->data + data_len;
+	memcpy(ptr_copy->buffer, ptr_origin->buffer, buffer_len);
+	ptr_copy->p = ptr_copy->buffer + buffer_len;
 
 	return copy;
 }
@@ -81,29 +81,29 @@ static VALUE
 murmur_reset(VALUE self)
 {
 	MURMURHASH(self, ptr);
-	ptr->p = ptr->data;
+	ptr->p = ptr->buffer;
 	return self;
 }
 
 static VALUE
 murmur_update(VALUE self, VALUE str)
 {
-	size_t data_len, str_len, require, newsize;
+	size_t buffer_len, str_len, require, newsize;
 	const char* str_p;
 	MURMURHASH(self, ptr);
 
 	StringValue(str);
 	str_p = RSTRING_PTR(str);
 	str_len = RSTRING_LEN(str);
-	data_len = (ptr->p - ptr->data);
-	require = data_len + str_len;
+	buffer_len = (ptr->p - ptr->buffer);
+	require = buffer_len + str_len;
 	if (ptr->memsize < require) {
 		newsize = ptr->memsize;
 		while (newsize < require) {
 			newsize *= 2;
 		}
-		ptr->data = realloc(ptr->data, sizeof(char) * newsize);
-		ptr->p = ptr->data + data_len;
+		ptr->buffer = realloc(ptr->buffer, sizeof(char) * newsize);
+		ptr->p = ptr->buffer + buffer_len;
 		ptr->memsize = newsize;
 	}
 	memcpy(ptr->p, str_p, str_len);
@@ -120,8 +120,8 @@ murmur_hash_process(murmur_t* ptr)
 	uint32_t length, h;
 	const char* p;
 
-	p = ptr->data;
-	length = ptr->p - ptr->data;
+	p = ptr->buffer;
+	length = ptr->p - ptr->buffer;
 	h = length * m;
 
 	while (4 <= length) {
