@@ -9,7 +9,6 @@
 #define MURMURHASH_BLOCK_LENGTH 4
 #define MURMURHASH_BUFFER_INIT 64
 #define MURMURHASH_MAGIC 0x5bd1e995
-ID id_concat;
 
 typedef struct {
 	char* buffer;
@@ -155,10 +154,10 @@ murmur_finish(VALUE self)
 
 	h = murmur_hash_process(ptr);
 
-	digest[0] = (h >> 24);
-	digest[1] = (h >> 16);
-	digest[2] = (h >> 8);
-	digest[3] = (h);
+	digest[0] = h >> 24;
+	digest[1] = h >> 16;
+	digest[2] = h >> 8;
+	digest[3] = h;
 
 	return rb_str_new((const char*) digest, 4);
 }
@@ -186,8 +185,6 @@ void
 Init_murmurhash()
 {
 	VALUE mDigest, cDigest_Base, cDigest_MurmurHash;
-
-	id_concat = rb_intern("concat");
 
 	rb_require("digest");
 
