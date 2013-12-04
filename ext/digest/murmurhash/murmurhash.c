@@ -27,7 +27,7 @@ typedef struct {
 static void
 murmur_init(murmur_t* ptr)
 {
-	ptr->buffer = (char*) malloc(sizeof(char) * MURMURHASH_BUFFER_INIT);
+	ptr->buffer = (char*) xmalloc(sizeof(char) * MURMURHASH_BUFFER_INIT);
 	ptr->p = ptr->buffer;
 	ptr->memsize = MURMURHASH_BUFFER_INIT;
 }
@@ -40,7 +40,7 @@ murmur_mark(murmur_t* ptr)
 static void
 murmur_free(murmur_t* ptr)
 {
-	free(ptr->buffer);
+	xfree(ptr->buffer);
 }
 
 static VALUE
@@ -67,7 +67,7 @@ murmur_initialize_copy(VALUE copy, VALUE origin)
 	buffer_len = ptr_origin->p - ptr_origin->buffer;
 
 	if (ptr_copy->memsize < ptr_origin->memsize) {
-		ptr_copy->buffer = (char*) realloc(ptr_copy->buffer, sizeof(char) * ptr_origin->memsize);
+		ptr_copy->buffer = (char*) xrealloc(ptr_copy->buffer, sizeof(char) * ptr_origin->memsize);
 		ptr_copy->memsize = ptr_origin->memsize;
 	}
 
@@ -102,7 +102,7 @@ murmur_update(VALUE self, VALUE str)
 		while (newsize < require) {
 			newsize *= 2;
 		}
-		ptr->buffer = realloc(ptr->buffer, sizeof(char) * newsize);
+		ptr->buffer = xrealloc(ptr->buffer, sizeof(char) * newsize);
 		ptr->p = ptr->buffer + buffer_len;
 		ptr->memsize = newsize;
 	}
