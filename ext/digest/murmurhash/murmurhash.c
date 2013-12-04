@@ -33,11 +33,6 @@ murmur_init(murmur_t* ptr)
 }
 
 static void
-murmur_mark(murmur_t* ptr)
-{
-}
-
-static void
 murmur_free(murmur_t* ptr)
 {
 	xfree(ptr->buffer);
@@ -48,7 +43,7 @@ murmur_alloc(VALUE self)
 {
 	murmur_t* ptr = ALLOC(murmur_t);
 	murmur_init(ptr);
-	return Data_Wrap_Struct(self, murmur_mark, murmur_free, ptr);
+	return Data_Wrap_Struct(self, 0, murmur_free, ptr);
 }
 
 static VALUE
