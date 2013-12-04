@@ -8,7 +8,7 @@
 #define MURMURHASH_DIGEST_LENGTH 4
 #define MURMURHASH_BLOCK_LENGTH 4
 #define MURMURHASH_BUFFER_INIT 64
-
+#define MURMURHASH_MAGIC 0x5bd1e995
 ID id_concat;
 
 typedef struct {
@@ -110,7 +110,7 @@ murmur_update(VALUE self, VALUE str)
 static uint32_t
 murmur_hash_process(murmur_t* ptr)
 {
-	const uint32_t m = 0x5bd1e995;
+	const uint32_t m = MURMURHASH_MAGIC;
 	const uint8_t r = 16;
 	uint32_t length, h;
 	const char* p;
