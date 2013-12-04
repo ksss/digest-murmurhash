@@ -65,10 +65,14 @@ murmur_initialize_copy(VALUE copy, VALUE origin)
 	Data_Get_Struct(origin, murmur_t, ptr_origin);
 
 	data_len = ptr_origin->p - ptr_origin->data;
-	ptr_copy->data = (char*) realloc(ptr_copy->data, sizeof(char) * ptr_origin->memsize);
+
+	if (ptr_copy->memsize < ptr_origin->memsize) {
+		ptr_copy->data = (char*) realloc(ptr_copy->data, sizeof(char) * ptr_origin->memsize);
+		ptr_copy->memsize = ptr_origin->memsize;
+	}
+
 	memcpy(ptr_copy->data, ptr_origin->data, data_len);
 	ptr_copy->p = ptr_copy->data + data_len;
-	ptr_copy->memsize = ptr_origin->memsize;
 
 	return copy;
 }
