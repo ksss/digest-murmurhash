@@ -1,24 +1,24 @@
 require 'spec_helper'
 
-describe Digest::MurmurHash do
+describe MurmurHash do
   let :murmur do
-    Digest::MurmurHash.new
+    MurmurHash.new
   end
 
   it "initialize" do
-    expect(Digest::MurmurHash.new).to be_a_kind_of(Digest::Base)
+    expect(MurmurHash.new).to be_a_kind_of(Base)
   end
 
   it "digest" do
-    expect(Digest::MurmurHash.digest("a" * 1024)).to eq("\xa1\x52\x2e\x5f".force_encoding("ASCII-8BIT"))
+    expect(MurmurHash.digest("a" * 1024)).to eq("\xa1\x52\x2e\x5f".force_encoding("ASCII-8BIT"))
   end
 
   it "hexdigest" do
-    expect(Digest::MurmurHash.hexdigest("a" * 1024)).to eq("a1522e5f")
+    expect(MurmurHash.hexdigest("a" * 1024)).to eq("a1522e5f")
   end
 
   it "rawdigest" do
-    expect(Digest::MurmurHash.rawdigest("a" * 1024)).to eq(0xa1522e5f)
+    expect(MurmurHash.rawdigest("a" * 1024)).to eq(0xa1522e5f)
   end
 
   it "update and reset and hexdigest" do
@@ -33,15 +33,15 @@ describe Digest::MurmurHash do
 
   it "==" do
     ["", "murmur", "murmurhash" * 1024].each do |str|
-      murmur1 = Digest::MurmurHash.new
-      murmur2 = Digest::MurmurHash.new
+      murmur1 = MurmurHash.new
+      murmur2 = MurmurHash.new
       expect(murmur1.update(str) == murmur2.update(str)).to be_true
     end
   end
 
   it "dup" do
-    murmur1 = Digest::MurmurHash.new
-    murmur2 = Digest::MurmurHash.new
+    murmur1 = MurmurHash.new
+    murmur2 = MurmurHash.new
     10.times {
       murmur1 = murmur1.update("murmurhash" * 100).dup
     }

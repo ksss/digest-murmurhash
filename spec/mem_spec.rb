@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Digest::MurmurHash do
+describe MurmurHash do
   it "gc safe" do
-    murmur = Digest::MurmurHash.new
+    murmur = MurmurHash.new
     GC.start
     murmur.update("murmur")
     GC.start
