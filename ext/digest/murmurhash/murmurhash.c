@@ -167,7 +167,7 @@ static VALUE
 murmur_finish(VALUE self)
 {
 	uint32_t h;
-	uint8_t digest[MURMURHASH_DIGEST_LENGTH];
+	uint8_t digest[4];
 	MURMURHASH(self, ptr);
 
 	h = murmur_hash_process(ptr);
