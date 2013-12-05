@@ -220,7 +220,7 @@ murmur_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 }
 
 void
-Init_murmurhash()
+Init_murmurhash(void)
 {
 	VALUE mDigest, cDigest_Base, cDigest_MurmurHash;
 
