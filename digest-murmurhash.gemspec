@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.version       = "0.1.0"
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
-  spec.description   = %q{Digest::MurmurHash is a class of use algorithm MurmurHash(MurmurHash1 32-bit) desiged by Austin Appleby.}
-  spec.summary       = %q{Digest::MurmurHash is a class of use algorithm MurmurHash(MurmurHash1 32-bit) desiged by Austin Appleby.}
+  spec.description   = %q{Digest::MurmurHash1 is a class of use algorithm MurmurHash1(32-bit) desiged by Austin Appleby.}
+  spec.summary       = %q{Digest::MurmurHash1 is a class of use algorithm MurmurHash1(32-bit) desiged by Austin Appleby.}
   spec.homepage      = ""
   spec.license       = "MIT"
 

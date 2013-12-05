@@ -7,18 +7,26 @@ describe MurmurHash do
 
   it "initialize" do
     expect(MurmurHash.new).to be_a_kind_of(Base)
+    expect(MurmurHash1.new).to be_a_kind_of(Base)
+    expect(MurmurHash2.new).to be_a_kind_of(Base)
   end
 
   it "digest" do
     expect(MurmurHash.digest("a" * 1024)).to eq("\xa1\x52\x2e\x5f".force_encoding("ASCII-8BIT"))
+    expect(MurmurHash1.digest("a" * 1024)).to eq("\xa1\x52\x2e\x5f".force_encoding("ASCII-8BIT"))
+    expect(MurmurHash2.digest("a" * 1024)).to eq("\xd0\x0c\x31\x2f".force_encoding("ASCII-8BIT"))
   end
 
   it "hexdigest" do
     expect(MurmurHash.hexdigest("a" * 1024)).to eq("a1522e5f")
+    expect(MurmurHash1.hexdigest("a" * 1024)).to eq("a1522e5f")
+    expect(MurmurHash2.hexdigest("a" * 1024)).to eq("d00c312f")
   end
 
   it "rawdigest" do
     expect(MurmurHash.rawdigest("a" * 1024)).to eq(0xa1522e5f)
+    expect(MurmurHash1.rawdigest("a" * 1024)).to eq(0xa1522e5f)
+    expect(MurmurHash2.rawdigest("a" * 1024)).to eq(0xd00c312f)
   end
 
   it "update and reset and hexdigest" do
@@ -60,6 +68,8 @@ describe MurmurHash do
   end
 
   it "to_i" do
-    expect(murmur.update("murmurhash").to_i).to eq(0xc709abd5);
+    expect(MurmurHash.new.update("murmurhash").to_i).to eq(0xc709abd5);
+    expect(MurmurHash1.new.update("murmurhash").to_i).to eq(0xc709abd5);
+    expect(MurmurHash2.new.update("murmurhash").to_i).to eq(0x33f67c7e);
   end
 end
