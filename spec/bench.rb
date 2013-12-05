@@ -54,8 +54,8 @@ def rand_str
 end
 
 s = rand_str
-p [murmur_hash(s)].pack("N")
-p Digest::MurmurHash.digest(s)
+p murmur_hash(s)
+p Digest::MurmurHash.rawdigest(s)
 
 Benchmark.bm do |x|
   n = 10000
@@ -65,9 +65,9 @@ Benchmark.bm do |x|
   }
 
   x.report {n.times{ |i|
-    [murmur_hash(a[i])].pack("N")
+    murmur_hash(a[i])
   }}
   x.report {n.times{ |i|
-    Digest::MurmurHash.digest(a[i])
+    Digest::MurmurHash.rawdigest(a[i])
   }}
 end

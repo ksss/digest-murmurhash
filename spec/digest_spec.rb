@@ -9,8 +9,16 @@ describe Digest::MurmurHash do
     expect(Digest::MurmurHash.new).to be_a_kind_of(Digest::Base)
   end
 
+  it "digest" do
+    expect(Digest::MurmurHash.digest("a" * 1024)).to eq("\xa1\x52\x2e\x5f".force_encoding("ASCII-8BIT"))
+  end
+
   it "hexdigest" do
     expect(Digest::MurmurHash.hexdigest("a" * 1024)).to eq("a1522e5f")
+  end
+
+  it "rawdigest" do
+    expect(Digest::MurmurHash.rawdigest("a" * 1024)).to eq(0xa1522e5f)
   end
 
   it "update and reset and hexdigest" do
