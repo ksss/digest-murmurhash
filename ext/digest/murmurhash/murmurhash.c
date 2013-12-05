@@ -183,13 +183,13 @@ murmur_finish(VALUE self)
 static VALUE
 murmur_digest_length(VALUE self)
 {
-	return INT2NUM(MURMURHASH_DIGEST_LENGTH);
+	return INT2FIX(MURMURHASH_DIGEST_LENGTH);
 }
 
 static VALUE
 murmur_block_length(VALUE self)
 {
-	return INT2NUM(MURMURHASH_BLOCK_LENGTH);
+	return INT2FIX(MURMURHASH_BLOCK_LENGTH);
 }
 
 static VALUE
