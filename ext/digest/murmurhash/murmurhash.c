@@ -31,6 +31,24 @@ murmur_init(murmur_t* ptr)
 	ptr->memsize = MURMURHASH_BUFFER_INIT;
 }
 
+static size_t
+murmur_buffer_length(murmur_t* ptr)
+{
+	return ptr->p - ptr->buffer;
+}
+
+static void
+murmur_realloc(murmur_t* ptr, size_t size)
+{
+	char* buffer;
+
+	buffer = (char*) xrealloc(ptr->buffer, size);
+	if (ptr->buffer == NULL)
+		rb_raise(rb_eNoMemError, "failed to realloc");
+
+	ptr->buffer = buffer;
+}
+
 static void
 murmur_free(murmur_t* ptr)
 {
@@ -58,10 +76,10 @@ murmur_initialize_copy(VALUE copy, VALUE origin)
 	Data_Get_Struct(copy, murmur_t, ptr_copy);
 	Data_Get_Struct(origin, murmur_t, ptr_origin);
 
-	buffer_len = ptr_origin->p - ptr_origin->buffer;
+	buffer_len = murmur_buffer_length(ptr_origin);
 
 	if (ptr_copy->memsize < ptr_origin->memsize) {
-		ptr_copy->buffer = (char*) xrealloc(ptr_copy->buffer, sizeof(char) * ptr_origin->memsize);
+		murmur_realloc(ptr_copy, sizeof(char) * ptr_origin->memsize);
 		ptr_copy->memsize = ptr_origin->memsize;
 	}
 
@@ -89,14 +107,14 @@ murmur_update(VALUE self, VALUE str)
 	StringValue(str);
 	str_p = RSTRING_PTR(str);
 	str_len = RSTRING_LEN(str);
-	buffer_len = (ptr->p - ptr->buffer);
+	buffer_len = murmur_buffer_length(ptr);
 	require = buffer_len + str_len;
 	if (ptr->memsize < require) {
 		newsize = ptr->memsize;
 		while (newsize < require) {
 			newsize *= 2;
 		}
-		ptr->buffer = xrealloc(ptr->buffer, sizeof(char) * newsize);
+		murmur_realloc(ptr, sizeof(char) * newsize);
 		ptr->p = ptr->buffer + buffer_len;
 		ptr->memsize = newsize;
 	}
@@ -115,7 +133,7 @@ murmur_hash_process(murmur_t* ptr)
 	const char* p;
 
 	p = ptr->buffer;
-	length = ptr->p - ptr->buffer;
+	length = murmur_buffer_length(ptr);
 	h = length * m;
 
 	while (4 <= length) {
@@ -127,14 +145,14 @@ murmur_hash_process(murmur_t* ptr)
 	}
 
 	switch (length) {
-		case 3:
-			h += p[2] << 16;
-		case 2:
-			h += p[1] << 8;
-		case 1:
-			h += p[0];
-			h *= m;
-			h ^= h >> r;
+	case 3:
+		h += p[2] << 16;
+	case 2:
+		h += p[1] << 8;
+	case 1:
+		h += p[0];
+		h *= m;
+		h ^= h >> r;
 	}
 
 	h *= m;
