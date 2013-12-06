@@ -26,19 +26,18 @@ Init_murmurhash(void)
 	rb_define_method(cDigest_MurmurHash, "digest_length", murmur_digest_length, 0);
 	rb_define_method(cDigest_MurmurHash, "block_length", murmur_block_length, 0);
 
-	rb_define_private_method(cDigest_MurmurHash, "finish", murmur1_finish, 0);
-	rb_define_method(cDigest_MurmurHash, "to_i", murmur1_to_i, 0);
-	rb_define_singleton_method(cDigest_MurmurHash, "rawdigest", murmur1_s_rawdigest, -1);
-
 	/* class Digest::MurmurHash1 < Digest::MurmurHash */
 	cDigest_MurmurHash1 = rb_define_class_under(mDigest, "MurmurHash1", cDigest_MurmurHash);
 	rb_define_alloc_func(cDigest_MurmurHash1, murmur_alloc);
+
+	rb_define_private_method(cDigest_MurmurHash1, "finish", murmur1_finish, 0);
+	rb_define_method(cDigest_MurmurHash1, "to_i", murmur1_to_i, 0);
+	rb_define_singleton_method(cDigest_MurmurHash1, "rawdigest", murmur1_s_rawdigest, -1);
 
 	/* class Digest::MurmurHash2 < Digest::MurmurHash */
 	cDigest_MurmurHash2 = rb_define_class_under(mDigest, "MurmurHash2", cDigest_MurmurHash);
 	rb_define_alloc_func(cDigest_MurmurHash2, murmur_alloc);
 
-	/* instance methods (override on Digest::MurmurHash) */
 	rb_define_private_method(cDigest_MurmurHash2, "finish", murmur2_finish, 0);
 	rb_define_method(cDigest_MurmurHash2, "to_i", murmur2_to_i, 0);
 	rb_define_singleton_method(cDigest_MurmurHash2, "rawdigest", murmur2_s_rawdigest, -1);

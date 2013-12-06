@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MurmurHash do
   let :all do
-    [MurmurHash, MurmurHash1, MurmurHash2]
+    [MurmurHash1, MurmurHash2]
   end
 
   it "update nil" do

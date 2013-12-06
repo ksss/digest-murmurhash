@@ -26,7 +26,7 @@ typedef struct {
 		rb_raise(rb_eArgError, "NULL found for " # name " when shouldn't be.'"); \
 	}
 
-size_t murmur_buffer_length(murmur_t* ptr);
+inline size_t murmur_buffer_length(murmur_t* ptr);
 VALUE murmur_initialize_copy(VALUE copy, VALUE origin);
 VALUE murmur_reset(VALUE self);
 VALUE murmur_alloc(VALUE self);

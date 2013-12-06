@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/ksss/digest-murmurhash.png?branch=master)](https://travis-ci.org/ksss/digest-murmurhash)
 
-**Digest::MurmurHash** is a class of use algorithm MurmurHash desiged by Austin Appleby.
+**MurmurHash** is a algorithm desiged by Austin Appleby.
+
+**Digest::MurmurHash** is base class of MurmurHash classes.
 
 **Digest::MurmurHash1** use algorithm MurmurHash1(32-bit).
 
@@ -17,10 +19,7 @@ You can use same interface built-in Digest::XXX classes.
 ```ruby
 require 'digest/murmurhash'
 
-# MurmurHash and MurmurHash1 can use like same.
-
-p Digest::MurmurHash.hexdigest('murmurhash') #=> 'c709abd5'
-p Digest::MurmurHash.file("./LICENSE.txt").hexdigest #=> '712e9641'
+# MurmurHash1 can use like same than Digest::XXX.
 
 p Digest::MurmurHash1.hexdigest('murmurhash') #=> 'c709abd5'
 p Digest::MurmurHash1.file("./LICENSE.txt").hexdigest #=> '712e9641'

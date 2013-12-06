@@ -55,7 +55,7 @@ end
 
 s = rand_str
 p murmur_hash(s)
-p Digest::MurmurHash.rawdigest(s)
+p Digest::MurmurHash1.rawdigest(s)
 
 Benchmark.bm do |x|
   n = 10000
@@ -68,6 +68,6 @@ Benchmark.bm do |x|
     murmur_hash(a[i])
   }}
   x.report {n.times{ |i|
-    Digest::MurmurHash.rawdigest(a[i])
+    Digest::MurmurHash1.rawdigest(a[i])
   }}
 end

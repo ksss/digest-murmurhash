@@ -20,13 +20,13 @@ murmur_realloc(murmur_t* ptr, size_t size)
 	ptr->buffer = buffer;
 }
 
-static void
+inline static void
 murmur_free(murmur_t* ptr)
 {
 	xfree(ptr->buffer);
 }
 
-size_t
+inline size_t
 murmur_buffer_length(murmur_t* ptr)
 {
 	return ptr->p - ptr->buffer;
