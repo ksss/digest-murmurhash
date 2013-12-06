@@ -44,7 +44,7 @@ def murmur_hash str
   h = (h * m).to_32
   h ^= h >> 17
 
-  h.to_32
+  h
 end
 
 def rand_str
