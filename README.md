@@ -8,17 +8,16 @@
 
 **Digest::MurmurHash2** use algorithm MurmurHash2(32-bit).
 
-All class compliance Digest API of Ruby.
+All classes compliance Digest API of Ruby.
 
 ## Usage
 
-You can use same interface built in Digest::XXX classes.
+You can use same interface built-in Digest::XXX classes.
 
 ```ruby
+require 'digest/murmurhash'
 
 # MurmurHash and MurmurHash1 can use like same.
-
-require 'digest/murmurhash'
 
 p Digest::MurmurHash.hexdigest('murmurhash') #=> 'c709abd5'
 p Digest::MurmurHash.file("./LICENSE.txt").hexdigest #=> '712e9641'
