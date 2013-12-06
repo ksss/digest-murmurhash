@@ -1,27 +1,4 @@
-#include "ruby.h"
-#ifdef HAVE_RUBY_DIGEST_H
-  #include "ruby/digest.h"
-#else
-  #include "digest.h"
-#endif
-
-#define MURMURHASH_DIGEST_LENGTH 4
-#define MURMURHASH_BLOCK_LENGTH 4
-#define MURMURHASH_BUFFER_INIT 64
-#define MURMURHASH_MAGIC 0x5bd1e995
-
-typedef struct {
-	char* buffer;
-	char* p;
-	size_t memsize;
-} murmur_t;
-
-#define MURMURHASH(self, name) \
-	murmur_t* name; \
-	Data_Get_Struct(self, murmur_t, name); \
-	if (name == NULL) { \
-		rb_raise(rb_eArgError, "NULL found for " # name " when shouldn't be.'"); \
-	}
+#include "murmurhash.h"
 
 static void
 murmur_init(murmur_t* ptr)
@@ -29,12 +6,6 @@ murmur_init(murmur_t* ptr)
 	ptr->buffer = (char*) xmalloc(sizeof(char) * MURMURHASH_BUFFER_INIT);
 	ptr->p = ptr->buffer;
 	ptr->memsize = MURMURHASH_BUFFER_INIT;
-}
-
-static size_t
-murmur_buffer_length(murmur_t* ptr)
-{
-	return ptr->p - ptr->buffer;
 }
 
 static void
@@ -55,7 +26,13 @@ murmur_free(murmur_t* ptr)
 	xfree(ptr->buffer);
 }
 
-static VALUE
+size_t
+murmur_buffer_length(murmur_t* ptr)
+{
+	return ptr->p - ptr->buffer;
+}
+
+VALUE
 murmur_alloc(VALUE self)
 {
 	murmur_t* ptr = ALLOC(murmur_t);
@@ -63,7 +40,7 @@ murmur_alloc(VALUE self)
 	return Data_Wrap_Struct(self, 0, murmur_free, ptr);
 }
 
-static VALUE
+VALUE
 murmur_initialize_copy(VALUE copy, VALUE origin)
 {
 	murmur_t *ptr_copy, *ptr_origin;
@@ -89,7 +66,7 @@ murmur_initialize_copy(VALUE copy, VALUE origin)
 	return copy;
 }
 
-static VALUE
+VALUE
 murmur_reset(VALUE self)
 {
 	MURMURHASH(self, ptr);
@@ -97,7 +74,7 @@ murmur_reset(VALUE self)
 	return self;
 }
 
-static VALUE
+VALUE
 murmur_update(VALUE self, VALUE str)
 {
 	size_t buffer_len, str_len, require, newsize;
@@ -124,234 +101,15 @@ murmur_update(VALUE self, VALUE str)
 	return self;
 }
 
-static inline size_t
-murmur1(uint32_t h, const uint8_t r)
-{
-	const uint32_t m = MURMURHASH_MAGIC;
-	h *= m;
-	h ^= h >> r;
-	return h;
-}
-
-static uint32_t
-murmur_hash_process1(murmur_t* ptr)
-{
-	const uint32_t m = MURMURHASH_MAGIC;
-	const uint8_t r = 16;
-	uint32_t length, h;
-	const char* p;
-
-	p = ptr->buffer;
-	length = murmur_buffer_length(ptr);
-	h = length * m;
-
-	while (4 <= length) {
-		h += *(uint32_t*)p;
-		h = murmur1(h, r);
-		p += 4;
-		length -= 4;
-	}
-
-	switch (length) {
-	case 3:
-		h += p[2] << 16;
-	case 2:
-		h += p[1] << 8;
-	case 1:
-		h += p[0];
-		h = murmur1(h, r);
-	}
-
-	h = murmur1(h, 10);
-	h = murmur1(h, 17);
-
-	return h;
-}
-
-static inline size_t
-murmur2(uint32_t h, uint32_t k, const uint8_t r)
-{
-	const uint32_t m = MURMURHASH_MAGIC;
-	k *= m;
-	k ^= k >> r;
-	k *= m;
-
-	h *= m;
-	h ^= k;
-	return h;
-}
-
-static uint32_t
-murmur_hash_process2(murmur_t* ptr)
-{
-	const uint32_t m = MURMURHASH_MAGIC;
-	const uint8_t r = 24;
-	uint32_t length, h, k;
-	const char* p;
-
-	p = ptr->buffer;
-	length = murmur_buffer_length(ptr);
-	h = length * m;
-
-	while (4 <= length) {
-		k = *(uint32_t*)p;
-		h = murmur2(h, k, r);
-		p += 4;
-		length -= 4;
-	}
-
-	switch (length) {
-	case 3: h ^= p[2] << 16;
-	case 2: h ^= p[1] << 8;
-	case 1: h ^= p[0];
-		h *= m;
-	}
-
-	h ^= h >> 13;
-	h *= m;
-	h ^= h >> 15;
-
-	return h;
-}
-
-static VALUE
-murmur1_finish(VALUE self)
-{
-	uint32_t h;
-	uint8_t digest[4];
-	MURMURHASH(self, ptr);
-
-	h = murmur_hash_process1(ptr);
-
-	digest[0] = h >> 24;
-	digest[1] = h >> 16;
-	digest[2] = h >> 8;
-	digest[3] = h;
-
-	return rb_str_new((const char*) digest, 4);
-}
-
-static VALUE
-murmur2_finish(VALUE self)
-{
-	uint32_t h;
-	uint8_t digest[4];
-	MURMURHASH(self, ptr);
-
-	h = murmur_hash_process2(ptr);
-
-	digest[0] = h >> 24;
-	digest[1] = h >> 16;
-	digest[2] = h >> 8;
-	digest[3] = h;
-
-	return rb_str_new((const char*) digest, 4);
-}
-
-static VALUE
+VALUE
 murmur_digest_length(VALUE self)
 {
 	return INT2FIX(MURMURHASH_DIGEST_LENGTH);
 }
 
-static VALUE
+VALUE
 murmur_block_length(VALUE self)
 {
 	return INT2FIX(MURMURHASH_BLOCK_LENGTH);
 }
 
-static VALUE
-murmur1_to_i(VALUE self)
-{
-	MURMURHASH(self, ptr);
-	return UINT2NUM(murmur_hash_process1(ptr));
-}
-
-static VALUE
-murmur2_to_i(VALUE self)
-{
-	MURMURHASH(self, ptr);
-	return UINT2NUM(murmur_hash_process2(ptr));
-}
-
-static VALUE
-murmur1_s_rawdigest(int argc, VALUE *argv, VALUE klass)
-{
-	VALUE str;
-	volatile VALUE obj;
-
-	if (argc < 1)
-		rb_raise(rb_eArgError, "no data given");
-
-	str = *argv++;
-	argc--;
-
-	StringValue(str);
-
-	obj = murmur_alloc(klass);
-
-	murmur_update(obj, str);
-	return murmur1_to_i(obj);
-}
-
-static VALUE
-murmur2_s_rawdigest(int argc, VALUE *argv, VALUE klass)
-{
-	VALUE str;
-	volatile VALUE obj;
-
-	if (argc < 1)
-		rb_raise(rb_eArgError, "no data given");
-
-	str = *argv++;
-	argc--;
-
-	StringValue(str);
-
-	obj = murmur_alloc(klass);
-
-	murmur_update(obj, str);
-	return murmur2_to_i(obj);
-}
-
-void
-Init_murmurhash(void)
-{
-	VALUE mDigest, cDigest_Base, cDigest_MurmurHash;
-	VALUE cDigest_MurmurHash1, cDigest_MurmurHash2;
-
-	/* Digest::MurmurHash is require that Digest module and Digest::Base class of CRuby built-in */
-	rb_require("digest");
-	mDigest = rb_path2class("Digest");
-	cDigest_Base = rb_path2class("Digest::Base");
-
-	/* class Digest::MurmurHash < Digest::Base */
-	cDigest_MurmurHash = rb_define_class_under(mDigest, "MurmurHash", cDigest_Base);
-
-	rb_define_alloc_func(cDigest_MurmurHash, murmur_alloc);
-
-	/* instance methods (override on Digest::Base) */
-	rb_define_method(cDigest_MurmurHash, "initialize_copy", murmur_initialize_copy, 1);
-	rb_define_method(cDigest_MurmurHash, "reset", murmur_reset, 0);
-	rb_define_method(cDigest_MurmurHash, "update", murmur_update, 1);
-	rb_define_method(cDigest_MurmurHash, "<<", murmur_update, 1);
-	rb_define_method(cDigest_MurmurHash, "digest_length", murmur_digest_length, 0);
-	rb_define_method(cDigest_MurmurHash, "block_length", murmur_block_length, 0);
-
-	rb_define_private_method(cDigest_MurmurHash, "finish", murmur1_finish, 0);
-	rb_define_method(cDigest_MurmurHash, "to_i", murmur1_to_i, 0);
-	rb_define_singleton_method(cDigest_MurmurHash, "rawdigest", murmur1_s_rawdigest, -1);
-
-	/* class Digest::MurmurHash1 < Digest::MurmurHash */
-	cDigest_MurmurHash1 = rb_define_class_under(mDigest, "MurmurHash1", cDigest_MurmurHash);
-	rb_define_alloc_func(cDigest_MurmurHash1, murmur_alloc);
-
-	/* class Digest::MurmurHash2 < Digest::MurmurHash */
-	cDigest_MurmurHash2 = rb_define_class_under(mDigest, "MurmurHash2", cDigest_MurmurHash);
-	rb_define_alloc_func(cDigest_MurmurHash2, murmur_alloc);
-
-	/* instance methods (override on Digest::MurmurHash) */
-	rb_define_private_method(cDigest_MurmurHash2, "finish", murmur2_finish, 0);
-	rb_define_method(cDigest_MurmurHash2, "to_i", murmur2_to_i, 0);
-	rb_define_singleton_method(cDigest_MurmurHash2, "rawdigest", murmur2_s_rawdigest, -1);
-}
