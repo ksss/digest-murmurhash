@@ -1,12 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-# require 'digest/murmurhash/version'
+require 'digest/murmurhash/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "digest-murmurhash"
-  # FIXME replace Digest::MurmurHash::VERSION but raise NameError
-  spec.version       = "0.1.0"
+  spec.version       = Digest::MurmurHash::VERSION
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
   spec.description   = %q{Digest::MurmurHash1 is a class of use algorithm MurmurHash1(32-bit) desiged by Austin Appleby.}
@@ -23,5 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", ['~> 2.11']
-  spec.add_development_dependency "rake-compiler", ["~> 0.8.3"]
+  spec.add_development_dependency "rake-compiler", ["~> 0.9.2"]
+  spec.add_development_dependency "digest-stringbuffer"
 end

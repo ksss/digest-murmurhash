@@ -14,28 +14,25 @@ murmur2(uint32_t h, uint32_t k, const uint8_t r)
 }
 
 static uint32_t
-murmur_hash_process2(murmur_t* ptr)
+murmur_hash_process2(const char *data, uint32_t length)
 {
 	const uint32_t m = MURMURHASH_MAGIC;
 	const uint8_t r = 24;
-	uint32_t length, h, k;
-	const char* p;
+	uint32_t h, k;
 
-	p = ptr->buffer;
-	length = murmur_buffer_length(ptr);
 	h = length * m;
 
 	while (4 <= length) {
-		k = *(uint32_t*)p;
+		k = *(uint32_t*)data;
 		h = murmur2(h, k, r);
-		p += 4;
+		data += 4;
 		length -= 4;
 	}
 
 	switch (length) {
-	case 3: h ^= p[2] << 16;
-	case 2: h ^= p[1] << 8;
-	case 1: h ^= p[0];
+	case 3: h ^= data[2] << 16;
+	case 2: h ^= data[1] << 8;
+	case 1: h ^= data[0];
 		h *= m;
 	}
 
@@ -53,7 +50,7 @@ murmur2_finish(VALUE self)
 	uint8_t digest[4];
 	MURMURHASH(self, ptr);
 
-	h = murmur_hash_process2(ptr);
+	h = murmur_hash_process2(ptr->buffer, ptr->p - ptr->buffer);
 
 	digest[0] = h >> 24;
 	digest[1] = h >> 16;
@@ -67,7 +64,7 @@ VALUE
 murmur2_to_i(VALUE self)
 {
 	MURMURHASH(self, ptr);
-	return UINT2NUM(murmur_hash_process2(ptr));
+	return UINT2NUM(murmur_hash_process2(ptr->buffer, ptr->p - ptr->buffer));
 }
 
 VALUE
@@ -84,9 +81,6 @@ murmur2_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 
 	StringValue(str);
 
-	obj = murmur_alloc(klass);
-
-	murmur_update(obj, str);
-	return murmur2_to_i(obj);
+	return UINT2NUM(murmur_hash_process2(RSTRING_PTR(str), RSTRING_LEN(str)));
 }
 

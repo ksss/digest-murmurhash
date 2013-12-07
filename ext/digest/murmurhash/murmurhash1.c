@@ -10,31 +10,28 @@ murmur1(uint32_t h, const uint8_t r)
 }
 
 static uint32_t
-murmur_hash_process1(murmur_t* ptr)
+murmur_hash_process1(const char *data, uint32_t length)
 {
 	const uint32_t m = MURMURHASH_MAGIC;
 	const uint8_t r = 16;
-	uint32_t length, h;
-	const char* p;
+	uint32_t h;
 
-	p = ptr->buffer;
-	length = murmur_buffer_length(ptr);
 	h = length * m;
 
 	while (4 <= length) {
-		h += *(uint32_t*)p;
+		h += *(uint32_t*)data;
 		h = murmur1(h, r);
-		p += 4;
+		data += 4;
 		length -= 4;
 	}
 
 	switch (length) {
 	case 3:
-		h += p[2] << 16;
+		h += data[2] << 16;
 	case 2:
-		h += p[1] << 8;
+		h += data[1] << 8;
 	case 1:
-		h += p[0];
+		h += data[0];
 		h = murmur1(h, r);
 	}
 
@@ -51,7 +48,7 @@ murmur1_finish(VALUE self)
 	uint8_t digest[4];
 	MURMURHASH(self, ptr);
 
-	h = murmur_hash_process1(ptr);
+	h = murmur_hash_process1(ptr->buffer, ptr->p - ptr->buffer);
 
 	digest[0] = h >> 24;
 	digest[1] = h >> 16;
@@ -65,14 +62,13 @@ VALUE
 murmur1_to_i(VALUE self)
 {
 	MURMURHASH(self, ptr);
-	return UINT2NUM(murmur_hash_process1(ptr));
+	return UINT2NUM(murmur_hash_process1(ptr->buffer, ptr->p - ptr->buffer));
 }
 
 VALUE
 murmur1_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 {
 	VALUE str;
-	volatile VALUE obj;
 
 	if (argc < 1)
 		rb_raise(rb_eArgError, "no data given");
@@ -82,8 +78,5 @@ murmur1_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 
 	StringValue(str);
 
-	obj = murmur_alloc(klass);
-
-	murmur_update(obj, str);
-	return murmur1_to_i(obj);
+	return UINT2NUM(murmur_hash_process1(RSTRING_PTR(str), RSTRING_LEN(str)));
 }

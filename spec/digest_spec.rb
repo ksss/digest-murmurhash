@@ -1,14 +1,9 @@
 require 'spec_helper'
 
-describe MurmurHash do
-  let :murmur do
-    MurmurHash.new
-  end
-
+describe "Digest::MurmurHash1 and 2" do
   it "initialize" do
-    expect(MurmurHash.new).to be_a_kind_of(Base)
-    expect(MurmurHash1.new).to be_a_kind_of(Base)
-    expect(MurmurHash2.new).to be_a_kind_of(Base)
+    expect(MurmurHash1.new).to be_a_kind_of(Digest::StringBuffer)
+    expect(MurmurHash2.new).to be_a_kind_of(Digest::StringBuffer)
   end
 
   it "digest" do
@@ -65,13 +60,8 @@ describe MurmurHash do
   end
 
   it "length" do
-    expect(murmur.length).to eq(4);
-  end
-
-  it "block_length" do
-    # MurmurHash don't use block.
-    # Therefore `block_length` return chunk size for calculate MurmurHash (equal 4) 
-    expect(murmur.block_length).to eq(4);
+    expect(MurmurHash1.new.length).to eq(4);
+    expect(MurmurHash2.new.length).to eq(4);
   end
 
   it "to_i" do
