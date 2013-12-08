@@ -1,3 +1,7 @@
+/*
+ * MurmurHash1 (C) Austin Appleby
+ */
+
 #include "murmurhash1.h"
 
 static inline size_t
