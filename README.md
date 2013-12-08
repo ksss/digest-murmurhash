@@ -8,6 +8,8 @@
 
 **Digest::MurmurHash2** use algorithm MurmurHash2(32-bit).
 
+**Digest::MurmurHash2A** use algorithm MurmurHash2A(32-bit).
+
 (**Digest::MurmurHash** exist to write only version number)
 
 All classes compliance Digest API of Ruby.
@@ -35,6 +37,8 @@ p Digest::MurmurHash2.file("./LICENSE.txt").hexdigest #=> '78678326'
 **Digest::MurmurHash1** < Digest::StringBuffer
 
 **Digest::MurmurHash2** < Digest::StringBuffer
+
+**Digest::MurmurHash2A** < Digest::StringBuffer
 
 ## Installation
 
