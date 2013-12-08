@@ -4,11 +4,11 @@
 
 **MurmurHash** is a algorithm desiged by Austin Appleby.
 
-**Digest::MurmurHash** is base class of MurmurHash classes.
-
 **Digest::MurmurHash1** use algorithm MurmurHash1(32-bit).
 
 **Digest::MurmurHash2** use algorithm MurmurHash2(32-bit).
+
+(**Digest::MurmurHash** exist to write only version number)
 
 All classes compliance Digest API of Ruby.
 
@@ -32,11 +32,9 @@ p Digest::MurmurHash2.file("./LICENSE.txt").hexdigest #=> '78678326'
 
 ## Class tree
 
-**Digest::MurmurHash** < Digest::Base
+**Digest::MurmurHash1** < Digest::StringBuffer
 
-**Digest::MurmurHash1** < Digest::MurmurHash
-
-**Digest::MurmurHash2** < Digest::MurmurHash
+**Digest::MurmurHash2** < Digest::StringBuffer
 
 ## Installation
 
