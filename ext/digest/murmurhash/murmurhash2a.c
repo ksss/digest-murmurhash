@@ -66,6 +66,37 @@ murmur2a_to_i(VALUE self)
 }
 
 VALUE
+murmur2a_s_digest(int argc, VALUE *argv, VALUE klass)
+{
+	VALUE str;
+	uint32_t h;
+	uint8_t digest[4];
+
+	if (argc < 1)
+		rb_raise(rb_eArgError, "no data given");
+
+	str = *argv++;
+	argc--;
+
+	StringValue(str);
+
+	h = murmur_hash_process2a(RSTRING_PTR(str), RSTRING_LEN(str));
+
+	digest[0] = h >> 24;
+	digest[1] = h >> 16;
+	digest[2] = h >> 8;
+	digest[3] = h;
+
+	return rb_str_new((const char*) digest, 4);
+}
+
+VALUE
+murmur2a_s_hexdigest(int argc, VALUE *argv, VALUE klass)
+{
+	return hexencode_str_new(murmur2a_s_digest(argc, argv, klass));
+}
+
+VALUE
 murmur2a_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 {
 	VALUE str;
