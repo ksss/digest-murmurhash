@@ -23,5 +23,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", ['~> 2.11']
   spec.add_development_dependency "rake-compiler", ["~> 0.9.2"]
-  spec.add_development_dependency "digest-stringbuffer"
+  spec.add_development_dependency "digest-stringbuffer", ["~> 0.0.2"]
 end
