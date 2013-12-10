@@ -100,7 +100,6 @@ VALUE
 murmur2a_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 {
 	VALUE str;
-	volatile VALUE obj;
 
 	if (argc < 1)
 		rb_raise(rb_eArgError, "no data given");
