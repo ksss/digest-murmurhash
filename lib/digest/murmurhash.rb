@@ -1,3 +1,4 @@
+require "digest/stringbuffer"
 begin
   require "digest/murmurhash/#{RUBY_VERSION[/\d+.\d+/]}/murmurhash"
 rescue LoadError

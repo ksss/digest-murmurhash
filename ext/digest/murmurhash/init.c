@@ -10,7 +10,6 @@ Init_murmurhash(void)
 	VALUE cDigest_MurmurHash1, cDigest_MurmurHash2, cDigest_MurmurHash2A;
 
 	/* Digest::MurmurHash is require that Digest::StringBuffer */
-	rb_require("digest/stringbuffer");
 	mDigest = rb_path2class("Digest");
 	cDigest_StringBuffer = rb_path2class("Digest::StringBuffer");
 
