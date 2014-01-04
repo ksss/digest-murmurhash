@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MurmurHash do
   let :all do
-    [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A]
+    [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A, MurmurHash64B]
   end
 
   it "gc safe" do

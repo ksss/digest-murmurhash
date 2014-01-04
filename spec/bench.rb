@@ -76,6 +76,7 @@ cases = [
   c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.rawdigest x, seed_str32 }),
   c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.rawdigest x, seed_str32 }),
   c.new("MurmurHash64A", proc{|x| Digest::MurmurHash64A.rawdigest x, seed_str64 }),
+  c.new("MurmurHash64B", proc{|x| Digest::MurmurHash64B.rawdigest x, seed_str64 }),
 ]
 reals = {}
 confrict = {}

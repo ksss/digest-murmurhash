@@ -3,11 +3,13 @@
 #include "murmurhash2.h"
 #include "murmurhash2a.h"
 #include "murmurhash64a.h"
+#include "murmurhash64b.h"
 
 VALUE cDigest_MurmurHash1,
 	  cDigest_MurmurHash2,
 	  cDigest_MurmurHash2A,
-	  cDigest_MurmurHash64A;
+	  cDigest_MurmurHash64A,
+	  cDigest_MurmurHash64B;
 ID id_seed,
    id_DEFAULT_SEED;
 
@@ -47,6 +49,113 @@ murmur_seed_set64(VALUE self, VALUE obj)
 		rb_raise(rb_eArgError, "seed string should 64 bit chars");
 	}
 	return rb_ivar_set(self, id_seed, obj);
+}
+
+uint32_t
+_murmur_finish32(VALUE self, uint32_t (*process)(const char *, uint32_t, uint32_t))
+{
+	const char *seed = RSTRING_PTR(murmur_seed_get32(self));
+	MURMURHASH(self, ptr);
+	return process(ptr->buffer, ptr->p - ptr->buffer, *(uint32_t*)seed);
+}
+
+uint64_t
+_murmur_finish64(VALUE self, uint64_t (*process)(const char *, uint32_t, uint64_t))
+{
+	const char *seed = RSTRING_PTR(murmur_seed_get64(self));
+	MURMURHASH(self, ptr);
+	return process(ptr->buffer, ptr->p - ptr->buffer, *(uint64_t*)seed);
+}
+
+
+uint32_t
+_murmur_s_digest32(int argc, VALUE *argv, VALUE klass, uint32_t (*process)(const char *, uint32_t, uint32_t))
+{
+	VALUE str;
+	const char *seed;
+
+	if (argc < 1)
+		rb_raise(rb_eArgError, "no data given");
+
+	str = *argv;
+
+	StringValue(str);
+
+	if (1 < argc) {
+		StringValue(argv[1]);
+		if (RSTRING_LEN(argv[1]) != 4) {
+			rb_raise(rb_eArgError, "seed string should 32 bit chars");
+		}
+		seed = RSTRING_PTR(argv[1]);
+	} else {
+		seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
+	}
+
+	return process(RSTRING_PTR(str), RSTRING_LEN(str), *(uint32_t*)seed);
+}
+
+uint64_t
+_murmur_s_digest64(int argc, VALUE *argv, VALUE klass, uint64_t (*process)(const char *, uint32_t, uint64_t))
+{
+	VALUE str;
+	const char *seed;
+
+	if (argc < 1)
+		rb_raise(rb_eArgError, "no data given");
+
+	str = *argv;
+
+	StringValue(str);
+
+	if (1 < argc) {
+		StringValue(argv[1]);
+		if (RSTRING_LEN(argv[1]) != 8) {
+			rb_raise(rb_eArgError, "seed string should 64 bit chars");
+		}
+		seed = RSTRING_PTR(argv[1]);
+	} else {
+		seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
+	}
+
+	return process(RSTRING_PTR(str), RSTRING_LEN(str), *(uint64_t*)seed);
+}
+
+/*
+ * from https://github.com/ruby/ruby/blob/trunk/ext/digest/digest.c
+ * Copyright (C) 1995-2001 Yukihiro Matsumoto
+ * Copyright (C) 2001-2006 Akinori MUSHA
+ */
+VALUE
+hexencode_str_new(VALUE str_digest)
+{
+	char *digest;
+	size_t digest_len;
+	size_t i;
+	VALUE str;
+	char *p;
+	static const char hex[] = {
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+		'a', 'b', 'c', 'd', 'e', 'f'
+	};
+
+	StringValue(str_digest);
+	digest = RSTRING_PTR(str_digest);
+	digest_len = RSTRING_LEN(str_digest);
+
+	if (LONG_MAX / 2 < digest_len) {
+		rb_raise(rb_eRuntimeError, "digest string too long");
+	}
+
+	str = rb_usascii_str_new(0, digest_len * 2);
+
+	for (i = 0, p = RSTRING_PTR(str); i < digest_len; i++) {
+		unsigned char byte = digest[i];
+
+		p[i + i]     = hex[byte >> 4];
+		p[i + i + 1] = hex[byte & 0x0f];
+	}
+
+	return str;
 }
 
 void
@@ -104,4 +213,15 @@ Init_murmurhash(void)
 	rb_define_method(cDigest_MurmurHash64A, "to_i", murmur64a_to_i, 0);
 	rb_define_method(cDigest_MurmurHash64A, "seed", murmur_seed_get64, 0);
 	rb_define_method(cDigest_MurmurHash64A, "seed=", murmur_seed_set64, 1);
+
+	/* class Digest::MurmurHash64B < Digest::StringBuffer */
+	cDigest_MurmurHash64B = rb_define_class_under(mDigest, "MurmurHash64B", cDigest_StringBuffer);
+	rb_define_const(cDigest_MurmurHash64B, "DEFAULT_SEED", rb_usascii_str_new(DEFAULT_SEED, 8));
+	rb_define_singleton_method(cDigest_MurmurHash64B, "digest", murmur64b_s_digest, -1);
+	rb_define_singleton_method(cDigest_MurmurHash64B, "hexdigest", murmur64b_s_hexdigest, -1);
+	rb_define_singleton_method(cDigest_MurmurHash64B, "rawdigest", murmur64b_s_rawdigest, -1);
+	rb_define_private_method(cDigest_MurmurHash64B, "finish", murmur64b_finish, 0);
+	rb_define_method(cDigest_MurmurHash64B, "to_i", murmur64b_to_i, 0);
+	rb_define_method(cDigest_MurmurHash64B, "seed", murmur_seed_get64, 0);
+	rb_define_method(cDigest_MurmurHash64B, "seed=", murmur_seed_set64, 1);
 }

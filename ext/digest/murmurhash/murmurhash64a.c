@@ -5,7 +5,7 @@
 #include "murmurhash64a.h"
 
 static uint64_t
-murmur_hash_process64a(const char *key, size_t len, uint64_t seed)
+murmur_hash_process64a(const char *key, uint32_t len, uint64_t seed)
 {
 	const uint64_t m = MURMURHASH_MAGIC64A;
 	const int r = 47;
@@ -47,21 +47,13 @@ murmur_hash_process64a(const char *key, size_t len, uint64_t seed)
 	return h;
 }
 
-static uint64_t
-_murmur64a_finish(VALUE self)
-{
-	const char *seed = RSTRING_PTR(murmur_seed_get64(self));
-	MURMURHASH(self, ptr);
-	return murmur_hash_process64a(ptr->buffer, ptr->p - ptr->buffer, *(uint64_t*)seed);
-}
-
 VALUE
 murmur64a_finish(VALUE self)
 {
 	uint8_t digest[8];
 	uint64_t h;
 
-	h = _murmur64a_finish(self);
+	h = _murmur_finish64(self, murmur_hash_process64a);
 #if INTEGER_PACK_LITTLE_ENDIAN
 	digest[7] = h >> 56;
 	digest[6] = h >> 48;
@@ -87,33 +79,7 @@ murmur64a_finish(VALUE self)
 VALUE
 murmur64a_to_i(VALUE self)
 {
-	return ULL2NUM(_murmur64a_finish(self));
-}
-
-static uint64_t
-_murmur64a_s_digest(int argc, VALUE *argv, VALUE klass)
-{
-	VALUE str;
-	const char *seed;
-
-	if (argc < 1)
-		rb_raise(rb_eArgError, "no data given");
-
-	str = *argv;
-
-	StringValue(str);
-
-	if (1 < argc) {
-		StringValue(argv[1]);
-		if (RSTRING_LEN(argv[1]) != 8) {
-			rb_raise(rb_eArgError, "seed string should 64 bit chars");
-		}
-		seed = RSTRING_PTR(argv[1]);
-	} else {
-		seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
-	}
-
-	return murmur_hash_process64a(RSTRING_PTR(str), RSTRING_LEN(str), *(uint64_t*)seed);
+	return ULL2NUM(_murmur_finish64(self, murmur_hash_process64a));
 }
 
 VALUE
@@ -121,7 +87,7 @@ murmur64a_s_digest(int argc, VALUE *argv, VALUE klass)
 {
 	uint8_t digest[8];
 	uint64_t h;
-	h = _murmur64a_s_digest(argc, argv, klass);
+	h = _murmur_s_digest64(argc, argv, klass, murmur_hash_process64a);
 #if INTEGER_PACK_LITTLE_ENDIAN
 	digest[7] = h >> 56;
 	digest[6] = h >> 48;
@@ -153,5 +119,5 @@ murmur64a_s_hexdigest(int argc, VALUE *argv, VALUE klass)
 VALUE
 murmur64a_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 {
-	return ULL2NUM(_murmur64a_s_digest(argc, argv, klass));
+	return ULL2NUM(_murmur_s_digest64(argc, argv, klass, murmur_hash_process64a));
 }

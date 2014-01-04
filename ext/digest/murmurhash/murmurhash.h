@@ -33,43 +33,11 @@ VALUE murmur_seed_get64(VALUE self);
 
 extern ID id_seed, id_DEFAULT_SEED;
 
-/*
- * from https://github.com/ruby/ruby/blob/trunk/ext/digest/digest.c
- * Copyright (C) 1995-2001 Yukihiro Matsumoto
- * Copyright (C) 2001-2006 Akinori MUSHA
- */
-static VALUE
-hexencode_str_new(VALUE str_digest)
-{
-	char *digest;
-	size_t digest_len;
-	size_t i;
-	VALUE str;
-	char *p;
-	static const char hex[] = {
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-		'a', 'b', 'c', 'd', 'e', 'f'
-	};
-
-	StringValue(str_digest);
-	digest = RSTRING_PTR(str_digest);
-	digest_len = RSTRING_LEN(str_digest);
-
-	if (LONG_MAX / 2 < digest_len) {
-		rb_raise(rb_eRuntimeError, "digest string too long");
-	}
-
-	str = rb_usascii_str_new(0, digest_len * 2);
-
-	for (i = 0, p = RSTRING_PTR(str); i < digest_len; i++) {
-		unsigned char byte = digest[i];
-
-		p[i + i]     = hex[byte >> 4];
-		p[i + i + 1] = hex[byte & 0x0f];
-	}
-
-	return str;
-}
+uint32_t _murmur_finish32(VALUE self, uint32_t (*process)(const char *, uint32_t, uint32_t));
+uint64_t _murmur_finish64(VALUE self, uint64_t (*process)(const char *, uint32_t, uint64_t));
+uint32_t _murmur_s_digest32(int argc, VALUE *argv, VALUE klass, uint32_t (*process)(const char *, uint32_t, uint32_t));
+uint64_t _murmur_s_digest64(int argc, VALUE *argv, VALUE klass, uint64_t (*process)(const char *, uint32_t, uint64_t));
+VALUE hexencode_str_new(VALUE str_digest);
 
 #endif /* ifndef MURMURHASH_INCLUDED */
 

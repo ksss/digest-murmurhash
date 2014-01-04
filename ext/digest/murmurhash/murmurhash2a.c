@@ -7,7 +7,7 @@
 #define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
 
 static uint32_t
-murmur_hash_process2a(const void *key, uint32_t length, uint32_t seed)
+murmur_hash_process2a(const char *key, uint32_t length, uint32_t seed)
 {
 	const uint32_t m = MURMURHASH_MAGIC;
 	const uint8_t r = 24;
@@ -76,38 +76,12 @@ murmur2a_to_i(VALUE self)
 	return ULONG2NUM(_murmur2a_finish(self));
 }
 
-static uint32_t
-_murmur2a_s_digest(int argc, VALUE *argv, VALUE klass)
-{
-	VALUE str;
-	const char *seed;
-
-	if (argc < 1)
-		rb_raise(rb_eArgError, "no data given");
-
-	str = *argv;
-
-	StringValue(str);
-
-	if (1 < argc) {
-		StringValue(argv[1]);
-		if (RSTRING_LEN(argv[1]) != 4) {
-			rb_raise(rb_eArgError, "seed string should 32 bit chars");
-		}
-		seed = RSTRING_PTR(argv[1]);
-	} else {
-		seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
-	}
-
-	return murmur_hash_process2a(RSTRING_PTR(str), RSTRING_LEN(str), *(uint32_t*)seed);
-}
-
 VALUE
 murmur2a_s_digest(int argc, VALUE *argv, VALUE klass)
 {
 	uint8_t digest[4];
 	uint32_t h;
-	h = _murmur2a_s_digest(argc, argv, klass);
+	h = _murmur_s_digest32(argc, argv, klass, murmur_hash_process2a);
 #if INTEGER_PACK_LITTLE_ENDIAN
 	digest[3] = h >> 24;
 	digest[2] = h >> 16;
@@ -131,6 +105,6 @@ murmur2a_s_hexdigest(int argc, VALUE *argv, VALUE klass)
 VALUE
 murmur2a_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 {
-	return ULL2NUM(_murmur2a_s_digest(argc, argv, klass));
+	return ULL2NUM(_murmur_s_digest32(argc, argv, klass, murmur_hash_process2a));
 }
 

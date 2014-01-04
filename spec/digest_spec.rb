@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Digest::MurmurHash do
   let :all do
-    [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A]
+    [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A, MurmurHash64B]
   end
 
   let :seed32 do
@@ -32,10 +32,9 @@ describe Digest::MurmurHash do
   end
 
   it "initialize" do
-    expect(MurmurHash1.new).to be_a_kind_of(Digest::StringBuffer)
-    expect(MurmurHash2.new).to be_a_kind_of(Digest::StringBuffer)
-    expect(MurmurHash2A.new).to be_a_kind_of(Digest::StringBuffer)
-    expect(MurmurHash64A.new).to be_a_kind_of(Digest::StringBuffer)
+    all.each do |c|
+      expect(c.new).to be_a_kind_of(Digest::StringBuffer)
+    end
   end
 
   it "digest and hexdigest" do
@@ -106,6 +105,7 @@ describe Digest::MurmurHash do
     expect(MurmurHash2.new.length).to eq(4);
     expect(MurmurHash2A.new.length).to eq(4);
     expect(MurmurHash64A.new.length).to eq(8);
+    expect(MurmurHash64B.new.length).to eq(8);
   end
 
   it "to_i" do
