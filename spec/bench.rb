@@ -11,7 +11,7 @@ require 'benchmark'
 def rand_str length
   rand = "";
   length.times {
-    rand << @rands[rand(62)]
+    rand << @rands.sample
   }
   rand
 end
@@ -79,18 +79,19 @@ n.times do |i|
   a[i] = rand_str 20
 end
 seed = rand(2**32)
+seed_str32 = [seed].pack("L")
+seed_str64 = [seed].pack("Q")
 c = Struct.new "Cases",
                :name,
                :func
 cases = [
   c.new("pureRuby", proc{|x| murmur_hash x, seed }),
   c.new("Prime37", proc{|x| Prime37.digest x }),
-  c.new("MurmurHash1", proc{|x| Digest::MurmurHash1.rawdigest x }),
-  c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.rawdigest x }),
-  c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.rawdigest x }),
-  c.new("MurmurHash64A", proc{|x| Digest::MurmurHash64A.rawdigest x }),
+  c.new("MurmurHash1", proc{|x| Digest::MurmurHash1.rawdigest x, seed_str32 }),
+  c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.rawdigest x, seed_str32 }),
+  c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.rawdigest x, seed_str32 }),
+  c.new("MurmurHash64A", proc{|x| Digest::MurmurHash64A.rawdigest x, seed_str64 }),
 ]
-
 reals = {}
 confrict = {}
 confricts = {}
