@@ -1,18 +1,6 @@
 require 'spec_helper'
 
 describe Digest::MurmurHash do
-  let :all do
-    [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A, MurmurHash64B]
-  end
-
-  let :seed32 do
-    (0..4).to_a.pack("C4")
-  end
-
-  let :seed64 do
-    (0..8).to_a.pack("C8")
-  end
-
   it "seed" do
     all.each do |c|
       m = c.new
@@ -101,11 +89,9 @@ describe Digest::MurmurHash do
   end
 
   it "length" do
-    expect(MurmurHash1.new.length).to eq(4);
-    expect(MurmurHash2.new.length).to eq(4);
-    expect(MurmurHash2A.new.length).to eq(4);
-    expect(MurmurHash64A.new.length).to eq(8);
-    expect(MurmurHash64B.new.length).to eq(8);
+    all.each do |c|
+      expect(c.new.length == c::DEFAULT_SEED.length).to be true
+    end
   end
 
   it "to_i" do

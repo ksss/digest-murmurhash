@@ -4,12 +4,16 @@
 #include "murmurhash2a.h"
 #include "murmurhash64a.h"
 #include "murmurhash64b.h"
+#include "murmurhash_neutral2.h"
+#include "murmurhash_aligned2.h"
 
 VALUE cDigest_MurmurHash1,
 	  cDigest_MurmurHash2,
 	  cDigest_MurmurHash2A,
 	  cDigest_MurmurHash64A,
-	  cDigest_MurmurHash64B;
+	  cDigest_MurmurHash64B,
+	  cDigest_MurmurHashNeutral2,
+	  cDigest_MurmurHashAligned2;
 ID id_seed,
    id_DEFAULT_SEED;
 
@@ -224,4 +228,26 @@ Init_murmurhash(void)
 	rb_define_method(cDigest_MurmurHash64B, "to_i", murmur64b_to_i, 0);
 	rb_define_method(cDigest_MurmurHash64B, "seed", murmur_seed_get64, 0);
 	rb_define_method(cDigest_MurmurHash64B, "seed=", murmur_seed_set64, 1);
+
+	/* class Digest::MurmurHashNeutral2 < Digest::StringBuffer */
+	cDigest_MurmurHashNeutral2 = rb_define_class_under(mDigest, "MurmurHashNeutral2", cDigest_StringBuffer);
+	rb_define_const(cDigest_MurmurHashNeutral2, "DEFAULT_SEED", rb_usascii_str_new(DEFAULT_SEED, 4));
+	rb_define_singleton_method(cDigest_MurmurHashNeutral2, "digest", murmur_neutral2_s_digest, -1);
+	rb_define_singleton_method(cDigest_MurmurHashNeutral2, "hexdigest", murmur_neutral2_s_hexdigest, -1);
+	rb_define_singleton_method(cDigest_MurmurHashNeutral2, "rawdigest", murmur_neutral2_s_rawdigest, -1);
+	rb_define_private_method(cDigest_MurmurHashNeutral2, "finish", murmur_neutral2_finish, 0);
+	rb_define_method(cDigest_MurmurHashNeutral2, "to_i", murmur_neutral2_to_i, 0);
+	rb_define_method(cDigest_MurmurHashNeutral2, "seed", murmur_seed_get32, 0);
+	rb_define_method(cDigest_MurmurHashNeutral2, "seed=", murmur_seed_set32, 1);
+
+	/* class Digest::MurmurHashAligned2 < Digest::StringBuffer */
+	cDigest_MurmurHashAligned2 = rb_define_class_under(mDigest, "MurmurHashAligned2", cDigest_StringBuffer);
+	rb_define_const(cDigest_MurmurHashAligned2, "DEFAULT_SEED", rb_usascii_str_new(DEFAULT_SEED, 4));
+	rb_define_singleton_method(cDigest_MurmurHashAligned2, "digest", murmur_aligned2_s_digest, -1);
+	rb_define_singleton_method(cDigest_MurmurHashAligned2, "hexdigest", murmur_aligned2_s_hexdigest, -1);
+	rb_define_singleton_method(cDigest_MurmurHashAligned2, "rawdigest", murmur_aligned2_s_rawdigest, -1);
+	rb_define_private_method(cDigest_MurmurHashAligned2, "finish", murmur_aligned2_finish, 0);
+	rb_define_method(cDigest_MurmurHashAligned2, "to_i", murmur_aligned2_to_i, 0);
+	rb_define_method(cDigest_MurmurHashAligned2, "seed", murmur_seed_get32, 0);
+	rb_define_method(cDigest_MurmurHashAligned2, "seed=", murmur_seed_set32, 1);
 }

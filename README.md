@@ -14,6 +14,10 @@
 
 **Digest::MurmurHash64B** use algorithm MurmurHash64B(64-bit).
 
+**Digest::MurmurHashNeutral2** use algorithm MurmurHashNeutral2(32-bit).
+
+**Digest::MurmurHashAligned2** use algorithm MurmurHashAligned2(32-bit).
+
 (**Digest::MurmurHash** exist to write only version number)
 
 All classes compliance Digest API of Ruby.
@@ -47,6 +51,10 @@ p Digest::MurmurHash2.file("./LICENSE.txt").hexdigest #=> '78678326'
 **Digest::MurmurHash64A** < Digest::StringBuffer
 
 **Digest::MurmurHash64B** < Digest::StringBuffer
+
+**Digest::MurmurHashNeutral2** < Digest::StringBuffer
+
+**Digest::MurmurHashAligned2** < Digest::StringBuffer
 
 ## Installation
 

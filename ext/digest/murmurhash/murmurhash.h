@@ -13,6 +13,41 @@
 #define DEFAULT_SEED "\x00\x00\x00\x00\x00\x00\x00\x00"
 #define MURMURHASH_MAGIC 0x5bd1e995
 #define MURMURHASH_MAGIC64A BIG_CONSTANT(0xc6a4a7935bd1e995)
+#if INTEGER_PACK_LITTLE_ENDIAN
+#  define ASSINE_BY_ENDIAN_32(digest, h) do { \
+	(digest)[3] = (h) >> 24; \
+	(digest)[2] = (h) >> 16; \
+	(digest)[1] = (h) >> 8; \
+	(digest)[0] = (h); \
+} while (0)
+#  define ASSINE_BY_ENDIAN_64(digest, h) do { \
+	(digest)[7] = (h) >> 56; \
+	(digest)[6] = (h) >> 48; \
+	(digest)[5] = (h) >> 40; \
+	(digest)[4] = (h) >> 32; \
+	(digest)[3] = (h) >> 24; \
+	(digest)[2] = (h) >> 16; \
+	(digest)[1] = (h) >> 8; \
+	(digest)[0] = (h); \
+} while (0)
+#else
+#  define ASSINE_BY_ENDIAN_32(digest, h) do { \
+	(digest)[0] = (h) >> 24; \
+	(digest)[1] = (h) >> 16; \
+	(digest)[2] = (h) >> 8; \
+	(digest)[3] = (h); \
+} while (0)
+#  define ASSINE_BY_ENDIAN_64(digest, h) do { \
+	(digest)[0] = (h) >> 56; \
+	(digest)[1] = (h) >> 48; \
+	(digest)[2] = (h) >> 40; \
+	(digest)[3] = (h) >> 32; \
+	(digest)[4] = (h) >> 24; \
+	(digest)[5] = (h) >> 16; \
+	(digest)[6] = (h) >> 8; \
+	(digest)[7] = (h); \
+} while (0)
+#endif
 
 /* should be same type structure to digest/stringbuffer */
 typedef struct {

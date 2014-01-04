@@ -1,18 +1,6 @@
 require 'spec_helper'
 
 describe MurmurHash do
-  let :all do
-    [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A, MurmurHash64B]
-  end
-
-  let :seed32 do
-    (0..4).to_a.pack("C4")
-  end
-
-  let :seed64 do
-    (0..8).to_a.pack("C8")
-  end
-
   it "update nil" do
     all.each do |c|
       murmur = c.new

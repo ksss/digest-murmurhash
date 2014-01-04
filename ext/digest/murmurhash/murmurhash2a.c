@@ -56,17 +56,7 @@ murmur2a_finish(VALUE self)
 	uint64_t h;
 
 	h = _murmur2a_finish(self);
-#if INTEGER_PACK_LITTLE_ENDIAN
-	digest[3] = h >> 24;
-	digest[2] = h >> 16;
-	digest[1] = h >> 8;
-	digest[0] = h;
-#else
-	digest[0] = h >> 24;
-	digest[1] = h >> 16;
-	digest[2] = h >> 8;
-	digest[3] = h;
-#endif
+	ASSINE_BY_ENDIAN_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
 }
 
@@ -82,17 +72,7 @@ murmur2a_s_digest(int argc, VALUE *argv, VALUE klass)
 	uint8_t digest[4];
 	uint32_t h;
 	h = _murmur_s_digest32(argc, argv, klass, murmur_hash_process2a);
-#if INTEGER_PACK_LITTLE_ENDIAN
-	digest[3] = h >> 24;
-	digest[2] = h >> 16;
-	digest[1] = h >> 8;
-	digest[0] = h;
-#else
-	digest[0] = h >> 24;
-	digest[1] = h >> 16;
-	digest[2] = h >> 8;
-	digest[3] = h;
-#endif
+	ASSINE_BY_ENDIAN_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
 }
 

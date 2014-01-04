@@ -54,25 +54,7 @@ murmur64a_finish(VALUE self)
 	uint64_t h;
 
 	h = _murmur_finish64(self, murmur_hash_process64a);
-#if INTEGER_PACK_LITTLE_ENDIAN
-	digest[7] = h >> 56;
-	digest[6] = h >> 48;
-	digest[5] = h >> 40;
-	digest[4] = h >> 32;
-	digest[3] = h >> 24;
-	digest[2] = h >> 16;
-	digest[1] = h >> 8;
-	digest[0] = h;
-#else
-	digest[0] = h >> 56;
-	digest[1] = h >> 48;
-	digest[2] = h >> 40;
-	digest[3] = h >> 32;
-	digest[4] = h >> 24;
-	digest[5] = h >> 16;
-	digest[6] = h >> 8;
-	digest[7] = h;
-#endif
+	ASSINE_BY_ENDIAN_64(digest, h);
 	return rb_str_new((const char*) digest, 8);
 }
 
@@ -88,25 +70,7 @@ murmur64a_s_digest(int argc, VALUE *argv, VALUE klass)
 	uint8_t digest[8];
 	uint64_t h;
 	h = _murmur_s_digest64(argc, argv, klass, murmur_hash_process64a);
-#if INTEGER_PACK_LITTLE_ENDIAN
-	digest[7] = h >> 56;
-	digest[6] = h >> 48;
-	digest[5] = h >> 40;
-	digest[4] = h >> 32;
-	digest[3] = h >> 24;
-	digest[2] = h >> 16;
-	digest[1] = h >> 8;
-	digest[0] = h;
-#else
-	digest[0] = h >> 56;
-	digest[1] = h >> 48;
-	digest[2] = h >> 40;
-	digest[3] = h >> 32;
-	digest[4] = h >> 24;
-	digest[5] = h >> 16;
-	digest[6] = h >> 8;
-	digest[7] = h;
-#endif
+	ASSINE_BY_ENDIAN_64(digest, h);
 	return rb_str_new((const char*) digest, 8);
 }
 
