@@ -16,20 +16,6 @@ def rand_str length
   rand
 end
 
-class Prime37 < Digest::StringBuffer
-  def initialize
-    @prime = 37
-  end
-
-  def finish
-    result = 0
-    buffer.unpack("C*").each do |c|
-      result += (c * @prime)
-    end
-    [result & 0xffffffff].pack("N")
-  end
-end
-
 class Integer
   def to_32
     self & 0xffffffff
@@ -86,7 +72,6 @@ c = Struct.new "Cases",
                :func
 cases = [
   c.new("pureRuby", proc{|x| murmur_hash x, seed }),
-  c.new("Prime37", proc{|x| Prime37.digest x }),
   c.new("MurmurHash1", proc{|x| Digest::MurmurHash1.rawdigest x, seed_str32 }),
   c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.rawdigest x, seed_str32 }),
   c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.rawdigest x, seed_str32 }),
