@@ -7,6 +7,15 @@ require 'digest/stringbuffer'
 require 'digest/murmurhash'
 require 'benchmark'
 
+@rands = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(//)
+def rand_str length
+  rand = "";
+  length.times {
+    rand << @rands[rand(62)]
+  }
+  rand
+end
+
 class Prime37 < Digest::StringBuffer
   def initialize
     @prime = 37
@@ -27,12 +36,12 @@ class Integer
   end
 end
 
-def murmur_hash str
+def murmur_hash str, seed
   data = str.dup.unpack("C*")
   m = 0x5bd1e995
   r = 16
   length = str.bytesize
-  h = (length * m).to_32
+  h = (seed ^ (length * m).to_32).to_32
 
   while 4 <= length
     d = data.shift(4).pack("C*").unpack("I")[0]
@@ -62,32 +71,24 @@ def murmur_hash str
   h
 end
 
-@rands = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(//)
-def rand_str
-  rand = "";
-  20.times {
-    rand << @rands[rand(62)]
-  }
-  rand
-end
-
 n = 100000
 times_enum = n.times
 
 a = Array.new(n, 0)
 n.times do |i|
-  a[i] = rand_str
+  a[i] = rand_str 20
 end
-
+seed = rand(2**32)
 c = Struct.new "Cases",
                :name,
                :func
 cases = [
-  c.new("pureRuby", proc{|x| murmur_hash x }),
+  c.new("pureRuby", proc{|x| murmur_hash x, seed }),
   c.new("Prime37", proc{|x| Prime37.digest x }),
   c.new("MurmurHash1", proc{|x| Digest::MurmurHash1.rawdigest x }),
   c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.rawdigest x }),
   c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.rawdigest x }),
+  c.new("MurmurHash64A", proc{|x| Digest::MurmurHash64A.rawdigest x }),
 ]
 
 reals = {}

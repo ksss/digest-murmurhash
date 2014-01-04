@@ -4,31 +4,24 @@
 
 #include "murmurhash2.h"
 
-static inline size_t
-murmur2(uint32_t h, uint32_t k, const uint8_t r)
-{
-	const uint32_t m = MURMURHASH_MAGIC;
-	k *= m;
-	k ^= k >> r;
-	k *= m;
-
-	h *= m;
-	h ^= k;
-	return h;
-}
-
 static uint32_t
-murmur_hash_process2(const char *data, uint32_t length)
+murmur_hash_process2(const char *data, uint32_t length, uint32_t seed)
 {
 	const uint32_t m = MURMURHASH_MAGIC;
 	const uint8_t r = 24;
 	uint32_t h, k;
 
-	h = length * m;
+	h = seed ^ length;
 
 	while (4 <= length) {
 		k = *(uint32_t*)data;
-		h = murmur2(h, k, r);
+		k *= m;
+		k ^= k >> r;
+		k *= m;
+
+		h *= m;
+		h ^= k;
+
 		data += 4;
 		length -= 4;
 	}
@@ -47,52 +40,84 @@ murmur_hash_process2(const char *data, uint32_t length)
 	return h;
 }
 
+static VALUE
+_murmur2_finish(VALUE self)
+{
+	const char *seed = RSTRING_PTR(murmur_seed_get32(self));
+	MURMURHASH(self, ptr);
+	return murmur_hash_process2(ptr->buffer, ptr->p - ptr->buffer, *(uint32_t*)seed);
+}
+
 VALUE
 murmur2_finish(VALUE self)
 {
-	uint32_t h;
 	uint8_t digest[4];
-	MURMURHASH(self, ptr);
+	uint64_t h;
 
-	h = murmur_hash_process2(ptr->buffer, ptr->p - ptr->buffer);
-
+	h = _murmur2_finish(self);
+#if INTEGER_PACK_LITTLE_ENDIAN
+	digest[3] = h >> 24;
+	digest[2] = h >> 16;
+	digest[1] = h >> 8;
+	digest[0] = h;
+#else
 	digest[0] = h >> 24;
 	digest[1] = h >> 16;
 	digest[2] = h >> 8;
 	digest[3] = h;
-
+#endif
 	return rb_str_new((const char*) digest, 4);
 }
 
 VALUE
 murmur2_to_i(VALUE self)
 {
-	MURMURHASH(self, ptr);
-	return UINT2NUM(murmur_hash_process2(ptr->buffer, ptr->p - ptr->buffer));
+	return ULONG2NUM(_murmur2_finish(self));
+}
+
+static uint32_t
+_murmur2_s_digest(int argc, VALUE *argv, VALUE klass)
+{
+	VALUE str;
+	const char *seed;
+
+	if (argc < 1)
+		rb_raise(rb_eArgError, "no data given");
+
+	str = *argv;
+
+	StringValue(str);
+
+	if (1 < argc) {
+		StringValue(argv[1]);
+		if (RSTRING_LEN(argv[1]) != 4) {
+			rb_raise(rb_eArgError, "seed string should 32 bit chars");
+		}
+		seed = RSTRING_PTR(argv[1]);
+	} else {
+		seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
+	}
+
+	return murmur_hash_process2(RSTRING_PTR(str), RSTRING_LEN(str), *(uint32_t*)seed);
 }
 
 VALUE
 murmur2_s_digest(int argc, VALUE *argv, VALUE klass)
 {
-	VALUE str;
-	uint32_t h;
 	uint8_t digest[4];
-
-	if (argc < 1)
-		rb_raise(rb_eArgError, "no data given");
-
-	str = *argv++;
-	argc--;
-
-	StringValue(str);
-
-	h = murmur_hash_process2(RSTRING_PTR(str), RSTRING_LEN(str));
-
+	uint32_t h;
+	h = _murmur2_s_digest(argc, argv, klass);
+#if INTEGER_PACK_LITTLE_ENDIAN
+	digest[3] = h >> 24;
+	digest[2] = h >> 16;
+	digest[1] = h >> 8;
+	digest[0] = h;
+#else
 	digest[0] = h >> 24;
 	digest[1] = h >> 16;
 	digest[2] = h >> 8;
 	digest[3] = h;
-
+#endif
 	return rb_str_new((const char*) digest, 4);
 }
 
@@ -105,16 +130,6 @@ murmur2_s_hexdigest(int argc, VALUE *argv, VALUE klass)
 VALUE
 murmur2_s_rawdigest(int argc, VALUE *argv, VALUE klass)
 {
-	VALUE str;
-
-	if (argc < 1)
-		rb_raise(rb_eArgError, "no data given");
-
-	str = *argv++;
-	argc--;
-
-	StringValue(str);
-
-	return UINT2NUM(murmur_hash_process2(RSTRING_PTR(str), RSTRING_LEN(str)));
+	return ULONG2NUM(_murmur2_s_digest(argc, argv, klass));
 }
 

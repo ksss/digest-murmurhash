@@ -3,7 +3,16 @@
 
 #include "ruby.h"
 
+#if defined(_MSC_VER)
+#  define BIG_CONSTANT(x) (x)
+// Other compilers
+#else   // defined(_MSC_VER)
+#  define BIG_CONSTANT(x) (x##LLU)
+#endif // !defined(_MSC_VER)
+
+#define DEFAULT_SEED "\x00\x00\x00\x00\x00\x00\x00\x00"
 #define MURMURHASH_MAGIC 0x5bd1e995
+#define MURMURHASH_MAGIC64A BIG_CONSTANT(0xc6a4a7935bd1e995)
 
 /* should be same type structure to digest/stringbuffer */
 typedef struct {
@@ -18,6 +27,11 @@ typedef struct {
 	if (name == NULL) { \
 		rb_raise(rb_eArgError, "NULL found for " # name " when shouldn't be.'"); \
 	}
+
+VALUE murmur_seed_get32(VALUE self);
+VALUE murmur_seed_get64(VALUE self);
+
+extern ID id_seed, id_DEFAULT_SEED;
 
 /*
  * from https://github.com/ruby/ruby/blob/trunk/ext/digest/digest.c

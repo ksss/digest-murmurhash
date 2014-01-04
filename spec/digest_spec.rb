@@ -1,48 +1,81 @@
 require 'spec_helper'
 
-describe "Digest::MurmurHash1 and 2" do
+describe Digest::MurmurHash do
   let :all do
-    [MurmurHash1, MurmurHash2, MurmurHash2A]
+    [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A]
+  end
+
+  let :seed32 do
+    (0..4).to_a.pack("C4")
+  end
+
+  let :seed64 do
+    (0..8).to_a.pack("C8")
+  end
+
+  it "seed" do
+    all.each do |c|
+      m = c.new
+      expect(c::DEFAULT_SEED == m.seed).to be true
+    end
+  end
+
+  it "seed=" do
+    all.each do |c|
+      m = c.new
+      m.update "murmurhash"
+      before_digest = m.hexdigest
+      m.seed = (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
+      expect(c::DEFAULT_SEED != m.seed).to be true
+      expect(before_digest != m.hexdigest).to be true
+    end
   end
 
   it "initialize" do
     expect(MurmurHash1.new).to be_a_kind_of(Digest::StringBuffer)
     expect(MurmurHash2.new).to be_a_kind_of(Digest::StringBuffer)
     expect(MurmurHash2A.new).to be_a_kind_of(Digest::StringBuffer)
+    expect(MurmurHash64A.new).to be_a_kind_of(Digest::StringBuffer)
   end
 
-  it "digest" do
-    expect(MurmurHash1.digest("a" * 1024)).to eq("\xa1\x52\x2e\x5f".force_encoding("ASCII-8BIT"))
-    expect(MurmurHash2.digest("a" * 1024)).to eq("\xd0\x0c\x31\x2f".force_encoding("ASCII-8BIT"))
-    expect(MurmurHash2A.digest("a" * 1024)).to eq("\xd5\x2d\xb1\x67".force_encoding("ASCII-8BIT"))
-  end
-
-  it "hexdigest" do
-    expect(MurmurHash1.hexdigest("a" * 1024)).to eq("a1522e5f")
-    expect(MurmurHash2.hexdigest("a" * 1024)).to eq("d00c312f")
-    expect(MurmurHash2A.hexdigest("a" * 1024)).to eq("d52db167")
+  it "digest and hexdigest" do
+    all.each do |c|
+      [:digest, :hexdigest].each do |method|
+        str = "a" * 1024
+        d = c.send(method, str)
+        d2 = c.send(method, str, (c::DEFAULT_SEED.length == 4) ? seed32 : seed64)
+        expect(d).to be_a_kind_of(String)
+        expect(d2).to be_a_kind_of(String)
+        expect(d.length).to be > 0
+        expect(d2.length).to be > 0
+        expect(d != d2).to be true
+      end
+    end
   end
 
   it "rawdigest" do
-    expect(MurmurHash1.rawdigest("a" * 1024)).to eq(0xa1522e5f)
-    expect(MurmurHash2.rawdigest("a" * 1024)).to eq(0xd00c312f)
-    expect(MurmurHash2A.rawdigest("a" * 1024)).to eq(0xd52db167)
+    all.each do |c|
+      str = "a" * 1024
+      d = c.rawdigest str
+      d2 = c.rawdigest str, (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
+      expect(d).to be_a_kind_of(Integer)
+      expect(d2).to be_a_kind_of(Integer)
+      expect(d).to be > 0
+      expect(d2).to be > 0
+      expect(d != d2).to be true
+    end
   end
 
-  it "update and reset and hexdigest" do
-    {
-      MurmurHash1 => "c709abd5",
-      MurmurHash2 => "33f67c7e",
-      MurmurHash2A => "df25554b",
-    }.each do |c, should|
+  it "update and reset and hexdigest(32bit)" do
+    all.each do |c|
       murmur = c.new
       murmur.update("m").update("u").update("r")
       murmur << "m" << "u" << "r"
       murmur << "hash"
-      expect(murmur.hexdigest).to eq(should);
-      expect(murmur.hexdigest).to eq(should);
-      expect(murmur.hexdigest!).to eq(should);
-      expect(murmur.hexdigest).to eq("00000000");
+      hex = murmur.hexdigest
+      expect(murmur.hexdigest! == hex).to be true
+      reset_str = "0" * ((c::DEFAULT_SEED.length == 4) ? 8 : 16)
+      expect(murmur.hexdigest).to eq(reset_str)
     end
   end
 
@@ -72,11 +105,12 @@ describe "Digest::MurmurHash1 and 2" do
     expect(MurmurHash1.new.length).to eq(4);
     expect(MurmurHash2.new.length).to eq(4);
     expect(MurmurHash2A.new.length).to eq(4);
+    expect(MurmurHash64A.new.length).to eq(8);
   end
 
   it "to_i" do
-    expect(MurmurHash1.new.update("murmurhash").to_i).to eq(0xc709abd5);
-    expect(MurmurHash2.new.update("murmurhash").to_i).to eq(0x33f67c7e);
-    expect(MurmurHash2A.new.update("murmurhash").to_i).to eq(0xdf25554b);
+    all.each do |c|
+      expect(c.new.update("murmurhash").to_i).to be_a_kind_of(Integer)
+    end
   end
 end
