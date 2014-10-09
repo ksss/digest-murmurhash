@@ -17,8 +17,7 @@ Rake::ExtensionTask.new('murmurhash', spec) do |ext|
   ext.lib_dir = 'lib/digest/murmurhash'
 end
 
-require 'digest/murmurhash/version'
-desc "gem reinstall v#{Digest::MurmurHash::VERSION}"
+desc "gem reinstall"
 task :reinstall do |t|
   system "gem uninstall murmurhash"
   system "rake clean"
