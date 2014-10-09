@@ -4,7 +4,7 @@ describe Digest::MurmurHash do
   it "seed" do
     all_classes.each do |c|
       m = c.new
-      expect(c::DEFAULT_SEED == m.seed).to be true
+      expect(c::DEFAULT_SEED).to eq(m.seed)
     end
   end
 
@@ -14,8 +14,8 @@ describe Digest::MurmurHash do
       m.update "murmurhash"
       before_digest = m.hexdigest
       m.seed = (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
-      expect(c::DEFAULT_SEED != m.seed).to be true
-      expect(before_digest != m.hexdigest).to be true
+      expect(c::DEFAULT_SEED).not_to eq(m.seed)
+      expect(before_digest).not_to eq(m.hexdigest)
     end
   end
 
