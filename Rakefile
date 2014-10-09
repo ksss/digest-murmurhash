@@ -19,7 +19,7 @@ end
 
 desc "gem reinstall"
 task :reinstall do |t|
-  system "gem uninstall murmurhash"
+  system "gem uninstall digest-murmurhash"
   system "rake clean"
   system "bundle exec rake"
   system "rake install"
