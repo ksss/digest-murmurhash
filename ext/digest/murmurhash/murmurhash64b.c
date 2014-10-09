@@ -65,12 +65,6 @@ murmur64b_finish(VALUE self)
 }
 
 VALUE
-murmur64b_to_i(VALUE self)
-{
-	return ULL2NUM(_murmur_finish64(self, murmur_hash_process64b));
-}
-
-VALUE
 murmur64b_s_digest(int argc, VALUE *argv, VALUE klass)
 {
 	uint8_t digest[8];
@@ -78,12 +72,6 @@ murmur64b_s_digest(int argc, VALUE *argv, VALUE klass)
 	h = _murmur_s_digest64(argc, argv, klass, murmur_hash_process64b);
 	ASSINE_BY_ENDIAN_64(digest, h);
 	return rb_str_new((const char*) digest, 8);
-}
-
-VALUE
-murmur64b_s_hexdigest(int argc, VALUE *argv, VALUE klass)
-{
-	return hexencode_str_new(murmur64b_s_digest(argc, argv, klass));
 }
 
 VALUE

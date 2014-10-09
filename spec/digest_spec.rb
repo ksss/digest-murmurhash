@@ -21,11 +21,12 @@ describe Digest::MurmurHash do
 
   it "initialize" do
     all.each do |c|
-      expect(c.new).to be_a_kind_of(Digest::StringBuffer)
+      expect(c.new).to be_a_kind_of(Digest::Class)
     end
   end
 
   it "digest and hexdigest" do
+    expect(Digest::MurmurHash1.hexdigest("abc")).to eq("dc5f5755")
     all.each do |c|
       [:digest, :hexdigest].each do |method|
         str = "a" * 1024
@@ -35,7 +36,7 @@ describe Digest::MurmurHash do
         expect(d2).to be_a_kind_of(String)
         expect(d.length).to be > 0
         expect(d2.length).to be > 0
-        expect(d != d2).to be true
+        expect(d != d2).to be_truthy
       end
     end
   end
@@ -49,7 +50,7 @@ describe Digest::MurmurHash do
       expect(d2).to be_a_kind_of(Integer)
       expect(d).to be > 0
       expect(d2).to be > 0
-      expect(d != d2).to be true
+      expect(d != d2).to be_truthy
     end
   end
 
@@ -71,7 +72,7 @@ describe Digest::MurmurHash do
       ["", "murmur", "murmurhash" * 1024].each do |str|
         murmur1 = c.new
         murmur2 = c.new
-        expect(murmur1.update(str) == murmur2.update(str)).to be_true
+        expect(murmur1.update(str) == murmur2.update(str)).to be_truthy
       end
     end
   end
@@ -84,13 +85,13 @@ describe Digest::MurmurHash do
         murmur1 = murmur1.update("murmurhash" * 100).dup
       }
       murmur2.update(("murmurhash" * 100) * 10)
-      expect(murmur1 == murmur2).to be_true
+      expect(murmur1).to eq(murmur2)
     end
   end
 
   it "length" do
     all.each do |c|
-      expect(c.new.length == c::DEFAULT_SEED.length).to be true
+      expect(c.new.length == c::DEFAULT_SEED.length).to be_truthy
     end
   end
 

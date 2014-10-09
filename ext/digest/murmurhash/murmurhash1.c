@@ -53,12 +53,6 @@ murmur1_finish(VALUE self)
 }
 
 VALUE
-murmur1_to_i(VALUE self)
-{
-	return UINT2NUM(_murmur_finish32(self, murmur_hash_process1));
-}
-
-VALUE
 murmur1_s_digest(int argc, VALUE *argv, VALUE klass)
 {
 	uint8_t digest[4];
@@ -66,12 +60,6 @@ murmur1_s_digest(int argc, VALUE *argv, VALUE klass)
 	h = _murmur_s_digest32(argc, argv, klass, murmur_hash_process1);
 	ASSINE_BY_ENDIAN_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
-}
-
-VALUE
-murmur1_s_hexdigest(int argc, VALUE *argv, VALUE klass)
-{
-	return hexencode_str_new(murmur1_s_digest(argc, argv, klass));
 }
 
 VALUE

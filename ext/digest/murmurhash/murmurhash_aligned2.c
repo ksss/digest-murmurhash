@@ -59,12 +59,6 @@ murmur_aligned2_finish(VALUE self)
 }
 
 VALUE
-murmur_aligned2_to_i(VALUE self)
-{
-	return ULL2NUM(_murmur_finish32(self, murmur_hash_process_aligned2));
-}
-
-VALUE
 murmur_aligned2_s_digest(int argc, VALUE *argv, VALUE klass)
 {
 	uint8_t digest[4];
@@ -72,12 +66,6 @@ murmur_aligned2_s_digest(int argc, VALUE *argv, VALUE klass)
 	h = _murmur_s_digest32(argc, argv, klass, murmur_hash_process_aligned2);
 	ASSINE_BY_ENDIAN_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
-}
-
-VALUE
-murmur_aligned2_s_hexdigest(int argc, VALUE *argv, VALUE klass)
-{
-	return hexencode_str_new(murmur_aligned2_s_digest(argc, argv, klass));
 }
 
 VALUE

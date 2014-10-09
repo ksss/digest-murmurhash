@@ -41,29 +41,15 @@ murmur_hash_process2a(const char *key, uint32_t length, uint32_t seed)
 	return h;
 }
 
-static uint32_t
-_murmur2a_finish(VALUE self)
-{
-	const char *seed = RSTRING_PTR(murmur_seed_get32(self));
-	MURMURHASH(self, ptr);
-	return murmur_hash_process2a(ptr->buffer, ptr->p - ptr->buffer, *(uint32_t*)seed);
-}
-
 VALUE
 murmur2a_finish(VALUE self)
 {
 	uint8_t digest[4];
 	uint64_t h;
 
-	h = _murmur2a_finish(self);
+	h = _murmur_finish32(self, murmur_hash_process2a);
 	ASSINE_BY_ENDIAN_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
-}
-
-VALUE
-murmur2a_to_i(VALUE self)
-{
-	return ULONG2NUM(_murmur2a_finish(self));
 }
 
 VALUE
@@ -74,12 +60,6 @@ murmur2a_s_digest(int argc, VALUE *argv, VALUE klass)
 	h = _murmur_s_digest32(argc, argv, klass, murmur_hash_process2a);
 	ASSINE_BY_ENDIAN_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
-}
-
-VALUE
-murmur2a_s_hexdigest(int argc, VALUE *argv, VALUE klass)
-{
-	return hexencode_str_new(murmur2a_s_digest(argc, argv, klass));
 }
 
 VALUE

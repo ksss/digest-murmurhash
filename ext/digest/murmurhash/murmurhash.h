@@ -63,9 +63,6 @@ typedef struct {
 		rb_raise(rb_eArgError, "NULL found for " # name " when shouldn't be.'"); \
 	}
 
-VALUE murmur_seed_get32(VALUE self);
-VALUE murmur_seed_get64(VALUE self);
-
 extern ID id_seed, id_DEFAULT_SEED;
 
 uint32_t _murmur_finish32(VALUE self, uint32_t (*process)(const char *, uint32_t, uint32_t));
