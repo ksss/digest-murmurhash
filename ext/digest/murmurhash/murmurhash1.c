@@ -2,7 +2,7 @@
  * MurmurHash1 (C) Austin Appleby
  */
 
-#include "murmurhash1.h"
+#include "murmurhash.h"
 
 #define murmur1(r) do { \
   h *= m; \

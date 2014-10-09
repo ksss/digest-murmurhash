@@ -2,7 +2,7 @@
  * MurmurHash2 (C) Austin Appleby
  */
 
-#include "murmurhash2.h"
+#include "murmurhash.h"
 
 static uint32_t
 murmur_hash_process2(const char *data, uint32_t length, uint32_t seed)

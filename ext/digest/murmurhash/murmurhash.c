@@ -1,11 +1,4 @@
 #include "murmurhash.h"
-#include "murmurhash1.h"
-#include "murmurhash2.h"
-#include "murmurhash2a.h"
-#include "murmurhash64a.h"
-#include "murmurhash64b.h"
-#include "murmurhash_neutral2.h"
-#include "murmurhash_aligned2.h"
 
 VALUE cDigest_MurmurHash1,
       cDigest_MurmurHash2,

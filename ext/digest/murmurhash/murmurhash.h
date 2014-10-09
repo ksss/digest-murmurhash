@@ -43,4 +43,26 @@ uint64_t _murmur_finish64(VALUE self, uint64_t (*process)(const char *, uint32_t
 uint32_t _murmur_s_digest32(int argc, VALUE *argv, VALUE klass, uint32_t (*process)(const char *, uint32_t, uint32_t));
 uint64_t _murmur_s_digest64(int argc, VALUE *argv, VALUE klass, uint64_t (*process)(const char *, uint32_t, uint64_t));
 
+VALUE murmur1_finish(VALUE self);
+VALUE murmur1_s_digest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur1_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur2_finish(VALUE self);
+VALUE murmur2_s_digest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur2_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur2a_finish(VALUE self);
+VALUE murmur2a_s_digest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur2a_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur64a_finish(VALUE self);
+VALUE murmur64a_s_digest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur64a_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur64b_finish(VALUE self);
+VALUE murmur64b_s_digest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur64b_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur_aligned2_finish(VALUE self);
+VALUE murmur_aligned2_s_digest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur_aligned2_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur_neutral2_finish(VALUE self);
+VALUE murmur_neutral2_s_digest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur_neutral2_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+
 #endif /* ifndef MURMURHASH_INCLUDED */

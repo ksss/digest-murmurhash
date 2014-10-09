@@ -2,7 +2,7 @@
  * MurmurHash2A (C) Austin Appleby
  */
 
-#include "murmurhash2a.h"
+#include "murmurhash.h"
 
 #define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
 

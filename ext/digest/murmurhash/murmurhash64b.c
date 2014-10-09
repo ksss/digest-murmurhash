@@ -2,7 +2,7 @@
  * MurmurHash64B (C) Austin Appleby
  */
 
-#include "murmurhash64b.h"
+#include "murmurhash.h"
 
 uint64_t
 murmur_hash_process64b(const char * key, uint32_t len, uint64_t seed)
