@@ -18,22 +18,10 @@ ID id_DEFAULT_SEED;
 ID iv_seed;
 ID iv_buffer;
 
-static int
-is_bigendian(void)
-{
-	static int init = 0;
-	static int endian_value;
-	char *p;
-	if (init) return endian_value;
-	init = 1;
-	p = (char*)&init;
-	return endian_value = p[0] ? 0 : 1;
-}
-
 void
 assign_by_endian_32(uint8_t *digest, uint64_t h)
 {
-	if (is_bigendian()) {
+	if (BIGENDIAN_P()) {
 		digest[0] = h >> 24;
 		digest[1] = h >> 16;
 		digest[2] = h >> 8;
@@ -50,7 +38,7 @@ assign_by_endian_32(uint8_t *digest, uint64_t h)
 void
 assign_by_endian_64(uint8_t *digest, uint64_t h)
 {
-	if (is_bigendian()) {
+	if (BIGENDIAN_P()) {
 		digest[0] = h >> 56;
 		digest[1] = h >> 48;
 		digest[2] = h >> 40;

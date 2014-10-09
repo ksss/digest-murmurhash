@@ -10,6 +10,28 @@
 #  define BIG_CONSTANT(x) (x##LLU)
 #endif // !defined(_MSC_VER)
 
+#ifdef DYNAMIC_ENDIAN
+/* for universal binary of NEXTSTEP and MacOS X */
+/* useless since autoconf 2.63? */
+static int
+is_bigendian(void)
+{
+  static int init = 0;
+  static int endian_value;
+  char *p;
+
+  if (init) return endian_value;
+  init = 1;
+  p = (char*)&init;
+  return endian_value = p[0]?0:1;
+}
+# define BIGENDIAN_P() (is_bigendian())
+#elif defined(WORDS_BIGENDIAN)
+# define BIGENDIAN_P() 1
+#else
+# define BIGENDIAN_P() 0
+#endif
+
 #define DEFAULT_SEED "\x00\x00\x00\x00\x00\x00\x00\x00"
 #define MURMURHASH_MAGIC 0x5bd1e995
 #define MURMURHASH_MAGIC64A BIG_CONSTANT(0xc6a4a7935bd1e995)
