@@ -3,8 +3,8 @@ require "digest/simple"
 module Digest
   class MurmurHash < Simple
     def initialize
-      @seed = self.class::DEFAULT_SEED
       super
+      reset
     end
 
     def seed
@@ -14,6 +14,12 @@ module Digest
     def seed=(s)
       fail ArgumentError, "seed string should #{digest_length * 16} bit chars" if s.bytesize != digest_length
       @seed = s
+    end
+
+    def reset
+      super
+      @seed = self.class::DEFAULT_SEED
+      self
     end
 
     module Size32

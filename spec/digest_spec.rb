@@ -100,4 +100,14 @@ describe Digest::MurmurHash do
       expect(c.new.update("murmurhash").to_i).to be_a_kind_of(Integer)
     end
   end
+
+  it "reset" do
+    all_classes.each do |c|
+      m1 = c.new
+      m2 = c.new
+      m1.update("murmurhash")
+      m1.seed = (m1.digest_length == 4) ? seed32 : seed64
+      expect(m1.reset).to eq(m2)
+    end
+  end
 end
