@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "digest-murmurhash"
-  spec.version       = "0.3.0"
+  spec.version       = "1.0.0"
   spec.author        = "ksss"
   spec.email         = "co000ri@gmail.com"
   spec.description   = %q{Digest::MurmurHash is class collections of use algorithm MurmurHash desiged by Austin Appleby.}
