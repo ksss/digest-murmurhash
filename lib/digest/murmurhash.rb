@@ -21,58 +21,29 @@ module Digest
       @seed = self.class::DEFAULT_SEED
       self
     end
+  end
 
-    module Size32
-      DEFAULT_SEED = "\x00\x00\x00\x00".encode('ASCII-8BIT')
+  {
+    '1' => 32,
+    '2' => 32,
+    '2A' => 32,
+    '64A' => 64,
+    '64B' => 64,
+    'Aligned2' => 32,
+    'Neutral2' => 32,
+  }.each do |name, size|
+    class_eval %Q{
+      class MurmurHash#{name} < MurmurHash
+        DEFAULT_SEED = "#{"\x00" * (size/8)}".encode('ASCII-8BIT')
+        def digest_length
+          #{size/8}
+        end
 
-      def digest_length
-        4
+        def to_i
+          finish.unpack("#{size == 32 ? "I" : size == 64 ? "L" : "Q"}")[0]
+        end
       end
-
-      def to_i
-        finish.unpack("I")[0]
-      end
-    end
-
-    module Size64
-      DEFAULT_SEED = "\x00\x00\x00\x00\x00\x00\x00\x00".encode('ASCII-8BIT')
-
-      def digest_length
-        8
-      end
-
-      def to_i
-        finish.unpack("L")[0]
-      end
-    end
-  end
-
-  class MurmurHash1 < MurmurHash
-    include Size32
-  end
-
-  class MurmurHash2 < MurmurHash
-    include Size32
-  end
-
-  class MurmurHash2A < MurmurHash
-    include Size32
-  end
-
-  class MurmurHash64A < MurmurHash
-    include Size64
-  end
-
-  class MurmurHash64B < MurmurHash
-    include Size64
-  end
-
-  class MurmurHashAligned2 < MurmurHash
-    include Size32
-  end
-
-  class MurmurHashNeutral2 < MurmurHash
-    include Size32
+    }
   end
 end
 
