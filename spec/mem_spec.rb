@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe MurmurHash do
   it "gc safe" do
-    all.each do |c|
+    all_classes.each do |c|
       murmur = c.new
       init = murmur.to_s
       GC.start

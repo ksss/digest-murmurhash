@@ -1,7 +1,7 @@
 require 'digest/murmurhash'
 include Digest
 
-def all
+def all_classes
   [
     MurmurHash1,
     MurmurHash2,

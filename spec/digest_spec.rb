@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe Digest::MurmurHash do
   it "seed" do
-    all.each do |c|
+    all_classes.each do |c|
       m = c.new
       expect(c::DEFAULT_SEED == m.seed).to be true
     end
   end
 
   it "seed=" do
-    all.each do |c|
+    all_classes.each do |c|
       m = c.new
       m.update "murmurhash"
       before_digest = m.hexdigest
@@ -20,14 +20,14 @@ describe Digest::MurmurHash do
   end
 
   it "initialize" do
-    all.each do |c|
+    all_classes.each do |c|
       expect(c.new).to be_a_kind_of(Digest::Class)
     end
   end
 
   it "digest and hexdigest" do
     expect(Digest::MurmurHash1.hexdigest("abc")).to eq("dc5f5755")
-    all.each do |c|
+    all_classes.each do |c|
       [:digest, :hexdigest].each do |method|
         str = "a" * 1024
         d = c.send(method, str)
@@ -42,7 +42,7 @@ describe Digest::MurmurHash do
   end
 
   it "rawdigest" do
-    all.each do |c|
+    all_classes.each do |c|
       str = "a" * 1024
       d = c.rawdigest str
       d2 = c.rawdigest str, (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
@@ -55,7 +55,7 @@ describe Digest::MurmurHash do
   end
 
   it "update and reset and hexdigest(32bit)" do
-    all.each do |c|
+    all_classes.each do |c|
       murmur = c.new
       murmur.update("m").update("u").update("r")
       murmur << "m" << "u" << "r"
@@ -68,7 +68,7 @@ describe Digest::MurmurHash do
   end
 
   it "==" do
-    all.each do |c|
+    all_classes.each do |c|
       ["", "murmur", "murmurhash" * 1024].each do |str|
         murmur1 = c.new
         murmur2 = c.new
@@ -78,7 +78,7 @@ describe Digest::MurmurHash do
   end
 
   it "dup" do
-    all.each do |c|
+    all_classes.each do |c|
       murmur1 = c.new
       murmur2 = c.new
       10.times {
@@ -90,13 +90,13 @@ describe Digest::MurmurHash do
   end
 
   it "length" do
-    all.each do |c|
+    all_classes.each do |c|
       expect(c.new.length == c::DEFAULT_SEED.length).to be_truthy
     end
   end
 
   it "to_i" do
-    all.each do |c|
+    all_classes.each do |c|
       expect(c.new.update("murmurhash").to_i).to be_a_kind_of(Integer)
     end
   end
