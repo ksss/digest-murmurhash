@@ -18,6 +18,60 @@ ID id_DEFAULT_SEED;
 ID iv_seed;
 ID iv_buffer;
 
+static int
+is_bigendian(void)
+{
+	static int init = 0;
+	static int endian_value;
+	char *p;
+	if (init) return endian_value;
+	init = 1;
+	p = (char*)&init;
+	return endian_value = p[0] ? 0 : 1;
+}
+
+void
+assign_by_endian_32(uint8_t *digest, uint64_t h)
+{
+	if (is_bigendian()) {
+		digest[0] = h >> 24;
+		digest[1] = h >> 16;
+		digest[2] = h >> 8;
+		digest[3] = h;
+	}
+	else {
+		digest[3] = h >> 24;
+		digest[2] = h >> 16;
+		digest[1] = h >> 8;
+		digest[0] = h;
+	}
+}
+
+void
+assign_by_endian_64(uint8_t *digest, uint64_t h)
+{
+	if (is_bigendian()) {
+		digest[0] = h >> 56;
+		digest[1] = h >> 48;
+		digest[2] = h >> 40;
+		digest[3] = h >> 32;
+		digest[4] = h >> 24;
+		digest[5] = h >> 16;
+		digest[6] = h >> 8;
+		digest[7] = h;
+	}
+	else {
+		digest[7] = h >> 56;
+		digest[6] = h >> 48;
+		digest[5] = h >> 40;
+		digest[4] = h >> 32;
+		digest[3] = h >> 24;
+		digest[2] = h >> 16;
+		digest[1] = h >> 8;
+		digest[0] = h;
+	}
+}
+
 uint32_t
 _murmur_finish32(VALUE self, uint32_t (*process)(const char *, uint32_t, uint32_t))
 {

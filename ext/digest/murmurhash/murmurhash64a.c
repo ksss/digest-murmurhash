@@ -19,12 +19,12 @@ murmur_hash_process64a(const char *key, uint32_t len, uint64_t seed)
 	{
 		uint64_t k = *data++;
 
-		k *= m; 
-		k ^= k >> r; 
-		k *= m; 
+		k *= m;
+		k ^= k >> r;
+		k *= m;
 
 		h ^= k;
-		h *= m; 
+		h *= m;
 	}
 
 	const unsigned char * data2 = (const unsigned char*)data;
@@ -54,7 +54,7 @@ murmur64a_finish(VALUE self)
 	uint64_t h;
 
 	h = _murmur_finish64(self, murmur_hash_process64a);
-	ASSINE_BY_ENDIAN_64(digest, h);
+	assign_by_endian_64(digest, h);
 	return rb_str_new((const char*) digest, 8);
 }
 
@@ -64,7 +64,7 @@ murmur64a_s_digest(int argc, VALUE *argv, VALUE klass)
 	uint8_t digest[8];
 	uint64_t h;
 	h = _murmur_s_digest64(argc, argv, klass, murmur_hash_process64a);
-	ASSINE_BY_ENDIAN_64(digest, h);
+	assign_by_endian_64(digest, h);
 	return rb_str_new((const char*) digest, 8);
 }
 

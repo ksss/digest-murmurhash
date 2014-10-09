@@ -51,7 +51,7 @@ murmur_hash_process64b(const char * key, uint32_t len, uint64_t seed)
 	h = (h << 32) | h2;
 
 	return h;
-} 
+}
 
 VALUE
 murmur64b_finish(VALUE self)
@@ -60,7 +60,7 @@ murmur64b_finish(VALUE self)
 	uint64_t h;
 
 	h = _murmur_finish64(self, murmur_hash_process64b);
-	ASSINE_BY_ENDIAN_64(digest, h);
+	assign_by_endian_64(digest, h);
 	return rb_str_new((const char*) digest, 8);
 }
 
@@ -70,7 +70,7 @@ murmur64b_s_digest(int argc, VALUE *argv, VALUE klass)
 	uint8_t digest[8];
 	uint64_t h;
 	h = _murmur_s_digest64(argc, argv, klass, murmur_hash_process64b);
-	ASSINE_BY_ENDIAN_64(digest, h);
+	assign_by_endian_64(digest, h);
 	return rb_str_new((const char*) digest, 8);
 }
 

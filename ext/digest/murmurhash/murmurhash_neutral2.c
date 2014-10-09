@@ -54,7 +54,7 @@ murmur_neutral2_finish(VALUE self)
 	uint32_t h;
 
 	h = _murmur_finish32(self, murmur_hash_process_neutral2);
-	ASSINE_BY_ENDIAN_32(digest, h);
+	assign_by_endian_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
 }
 
@@ -64,7 +64,7 @@ murmur_neutral2_s_digest(int argc, VALUE *argv, VALUE klass)
 	uint8_t digest[4];
 	uint64_t h;
 	h = _murmur_s_digest32(argc, argv, klass, murmur_hash_process_neutral2);
-	ASSINE_BY_ENDIAN_32(digest, h);
+	assign_by_endian_32(digest, h);
 	return rb_str_new((const char*) digest, 4);
 }
 
