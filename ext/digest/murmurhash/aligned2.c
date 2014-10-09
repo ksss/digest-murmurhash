@@ -2,7 +2,7 @@
  * MurmurHashAligned2 (C) Austin Appleby
  */
 
-#include "murmurhash.h"
+#include "init.h"
 
 uint32_t
 murmur_hash_process_aligned2(const char * key, uint32_t len, uint32_t seed)

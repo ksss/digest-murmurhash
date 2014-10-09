@@ -1,4 +1,4 @@
-#include "murmurhash.h"
+#include "init.h"
 
 VALUE cDigest_MurmurHash1,
       cDigest_MurmurHash2,
