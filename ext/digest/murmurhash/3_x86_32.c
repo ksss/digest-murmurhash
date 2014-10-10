@@ -9,6 +9,7 @@ murmur_hash_process3_x86_32(const char * key, uint32_t len, uint32_t seed)
 {
   const uint8_t * data = (const uint8_t*)key;
   const int nblocks = len / 4;
+  int i;
 
   uint32_t h1 = seed;
 
@@ -20,7 +21,7 @@ murmur_hash_process3_x86_32(const char * key, uint32_t len, uint32_t seed)
 
   const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
 
-  for(int i = -nblocks; i; i++)
+  for(i = -nblocks; i; i++)
   {
     uint32_t k1 = getblock32(blocks,i);
 
