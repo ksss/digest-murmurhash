@@ -6,7 +6,8 @@ VALUE cDigest_MurmurHash1,
       cDigest_MurmurHash64A,
       cDigest_MurmurHash64B,
       cDigest_MurmurHashNeutral2,
-      cDigest_MurmurHashAligned2;
+      cDigest_MurmurHashAligned2,
+      cDigest_MurmurHash3_x86_32;
 ID id_DEFAULT_SEED;
 ID iv_seed;
 ID iv_buffer;
@@ -162,4 +163,9 @@ Init_murmurhash(void)
   rb_define_singleton_method(cDigest_MurmurHashAligned2, "digest", murmur_aligned2_s_digest, -1);
   rb_define_singleton_method(cDigest_MurmurHashAligned2, "rawdigest", murmur_aligned2_s_rawdigest, -1);
   rb_define_private_method(cDigest_MurmurHashAligned2, "finish", murmur_aligned2_finish, 0);
+
+  cDigest_MurmurHash3_x86_32 = rb_path2class("Digest::MurmurHash3_x86_32");
+  rb_define_singleton_method(cDigest_MurmurHash3_x86_32, "digest", murmur3_x86_32_s_digest, -1);
+  rb_define_singleton_method(cDigest_MurmurHash3_x86_32, "rawdigest", murmur3_x86_32_s_rawdigest, -1);
+  rb_define_private_method(cDigest_MurmurHash3_x86_32, "finish", murmur3_x86_32_finish, 0);
 }

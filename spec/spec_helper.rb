@@ -9,7 +9,8 @@ def all_classes
     MurmurHash64A,
     MurmurHash64B,
     MurmurHashNeutral2,
-    MurmurHashAligned2
+    MurmurHashAligned2,
+    MurmurHash3_x86_32
   ]
 end
 
@@ -20,4 +21,3 @@ end
 def seed64
   (0..8).to_a.pack("C8")
 end
-

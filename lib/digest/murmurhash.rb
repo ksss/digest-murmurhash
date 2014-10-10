@@ -31,6 +31,7 @@ module Digest
     '64B' => 64,
     'Aligned2' => 32,
     'Neutral2' => 32,
+    '3_x86_32' => 32,
   }.each do |name, size|
     to_i_body = case size
     when 32
