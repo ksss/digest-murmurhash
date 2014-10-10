@@ -41,16 +41,21 @@ describe Digest::MurmurHash do
     end
   end
 
-  it "rawdigest" do
+  context "rawdigest" do
     all_classes.each do |c|
       str = "a" * 1024
+      seed = (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
       d = c.rawdigest str
-      d2 = c.rawdigest str, (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
-      expect(d).to be_a_kind_of(Integer)
-      expect(d2).to be_a_kind_of(Integer)
-      expect(d).to be > 0
-      expect(d2).to be > 0
-      expect(d != d2).to be_truthy
+      d2 = c.rawdigest str, seed
+      it(c) do
+        expect(d).to be_a_kind_of(Integer)
+        expect(d2).to be_a_kind_of(Integer)
+        expect(d).to be > 0
+        expect(d2).to be > 0
+        expect(d != d2).to be_truthy
+        expect(d).to eq(c.new.update(str).to_i)
+        expect(d2).to eq(c.new.update(str).tap{|i| i.seed = seed}.to_i)
+      end
     end
   end
 

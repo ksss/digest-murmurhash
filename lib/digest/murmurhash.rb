@@ -32,6 +32,15 @@ module Digest
     'Aligned2' => 32,
     'Neutral2' => 32,
   }.each do |name, size|
+    to_i_body = case size
+    when 32
+      'finish.unpack("L")[0]'
+    when 64
+      'finish.unpack("Q")[0]'
+    when 128
+      'finish.unpack("QQ").inject(0) { |ret, i| ret = ret << 64; ret += i}'
+    end
+
     class_eval %Q{
       class MurmurHash#{name} < MurmurHash
         DEFAULT_SEED = "#{"\x00" * (size/8)}".encode('ASCII-8BIT')
@@ -40,7 +49,7 @@ module Digest
         end
 
         def to_i
-          finish.unpack("#{size == 32 ? "I" : size == 64 ? "L" : "Q"}")[0]
+          #{to_i_body}
         end
       end
     }
