@@ -25,8 +25,17 @@ describe Digest::MurmurHash do
     end
   end
 
+  context "static hexdigest" do
+    it { expect(Digest::MurmurHash1.hexdigest("abc")).to eq("dc5f5755") }
+    it { expect(Digest::MurmurHash2.hexdigest("abc")).to eq("9b7c5713") }
+    it { expect(Digest::MurmurHash2A.hexdigest("abc")).to eq("679f5811") }
+    it { expect(Digest::MurmurHash64A.hexdigest("abc")).to eq("fb5ea99834c3c99c") }
+    it { expect(Digest::MurmurHash64B.hexdigest("abc")).to eq("9d595cce51420da6") }
+    it { expect(Digest::MurmurHashAligned2.hexdigest("abc")).to eq("9b7c5713") }
+    it { expect(Digest::MurmurHashNeutral2.hexdigest("abc")).to eq("9b7c5713") }
+  end
+
   it "digest and hexdigest" do
-    expect(Digest::MurmurHash1.hexdigest("abc")).to eq("dc5f5755")
     all_classes.each do |c|
       [:digest, :hexdigest].each do |method|
         str = "a" * 1024
