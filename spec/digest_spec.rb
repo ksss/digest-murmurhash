@@ -35,22 +35,24 @@ describe Digest::MurmurHash do
     it { expect(Digest::MurmurHashNeutral2.hexdigest("abc")).to eq("9b7c5713") }
   end
 
-  it "digest and hexdigest" do
+  context "digest and hexdigest" do
     all_classes.each do |c|
       [:digest, :hexdigest].each do |method|
         str = "a" * 1024
         d = c.send(method, str)
         d2 = c.send(method, str, (c::DEFAULT_SEED.length == 4) ? seed32 : seed64)
-        expect(d).to be_a_kind_of(String)
-        expect(d2).to be_a_kind_of(String)
-        expect(d.length).to be > 0
-        expect(d2.length).to be > 0
-        expect(d != d2).to be_truthy
+        it ("#{c}##{method}") do
+          expect(d).to be_a_kind_of(String)
+          expect(d2).to be_a_kind_of(String)
+          expect(d.length).to be > 0
+          expect(d2.length).to be > 0
+          expect(d != d2).to be_truthy
+        end
       end
     end
   end
 
-  context "rawdigest" do
+  context "rawdigest and to_i" do
     all_classes.each do |c|
       str = "a" * 1024
       seed = (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
