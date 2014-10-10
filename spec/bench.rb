@@ -3,7 +3,6 @@
 lib = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-require 'digest/stringbuffer'
 require 'digest/murmurhash'
 require 'benchmark'
 
@@ -58,7 +57,6 @@ def murmur_hash str, seed
 end
 
 n = 100000
-times_enum = n.times
 
 a = Array.new(n, 0)
 n.times do |i|
@@ -72,13 +70,14 @@ c = Struct.new "Cases",
                :func
 cases = [
   c.new("pureRuby", proc{|x| murmur_hash x, seed }),
-  c.new("MurmurHash1", proc{|x| Digest::MurmurHash1.rawdigest x, seed_str32 }),
-  c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.rawdigest x, seed_str32 }),
-  c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.rawdigest x, seed_str32 }),
-  c.new("MurmurHash64A", proc{|x| Digest::MurmurHash64A.rawdigest x, seed_str64 }),
-  c.new("MurmurHash64B", proc{|x| Digest::MurmurHash64B.rawdigest x, seed_str64 }),
-  c.new("MurmurHashNeutral2", proc{|x| Digest::MurmurHashNeutral2.rawdigest x, seed_str32 }),
-  c.new("MurmurHashAligned2", proc{|x| Digest::MurmurHashAligned2.rawdigest x, seed_str32 }),
+  c.new("MurmurHash1", proc{|x| Digest::MurmurHash1.digest x, seed_str32 }),
+  c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.digest x, seed_str32 }),
+  c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.digest x, seed_str32 }),
+  c.new("MurmurHash64A", proc{|x| Digest::MurmurHash64A.digest x, seed_str64 }),
+  c.new("MurmurHash64B", proc{|x| Digest::MurmurHash64B.digest x, seed_str64 }),
+  c.new("MurmurHashNeutral2", proc{|x| Digest::MurmurHashNeutral2.digest x, seed_str32 }),
+  c.new("MurmurHashAligned2", proc{|x| Digest::MurmurHashAligned2.digest x, seed_str32 }),
+  c.new("MurmurHash3_x86_32", proc{|x| Digest::MurmurHash3_x86_32.digest x, seed_str32 }),
 ]
 reals = {}
 confrict = {}
@@ -94,20 +93,25 @@ puts
 puts "```"
 Benchmark.bm do |x|
   cases.each do |c|
+    i = 0
     z = x.report c.name do
-      times_enum.each do |i|
+      while i < n
         c.func.call(a[i])
+        i += 1
       end
     end
 
     confrict.clear
-    times_enum.each do |i|
+
+    i = 0
+    while i < n
       rethash = c.func.call(a[i])
       if confrict[rethash].nil?
         confrict[rethash] = 0
-      else 
+      else
         confrict[rethash] += 1
       end
+      i += 1
     end
     reals[c.name] = z.real
     confricts[c.name] = confrict.count{|hash, count| 0 < count}
