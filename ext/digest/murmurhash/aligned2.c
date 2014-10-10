@@ -4,47 +4,135 @@
 
 #include "init.h"
 
+#define MIX(h,k,m) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
+
 uint32_t
 murmur_hash_process_aligned2(const char * key, uint32_t len, uint32_t seed)
 {
   const uint32_t m = 0x5bd1e995;
   const int r = 24;
 
-  uint32_t h = seed ^ len;
-
   const unsigned char * data = (const unsigned char *)key;
 
-  while(len >= 4) {
-    uint32_t k;
+  uint32_t h = seed ^ len;
 
-    k  = data[0];
-    k |= data[1] << 8;
-    k |= data[2] << 16;
-    k |= data[3] << 24;
+  int align = (uint64_t)data & 3;
 
-    k *= m;
-    k ^= k >> r;
-    k *= m;
+  if(align && (len >= 4))
+  {
+    // Pre-load the temp registers
 
+    uint32_t t = 0, d = 0;
+
+    switch(align)
+    {
+      case 1: t |= data[2] << 16;
+      case 2: t |= data[1] << 8;
+      case 3: t |= data[0];
+    }
+
+    t <<= (8 * align);
+
+    data += 4-align;
+    len -= 4-align;
+
+    int sl = 8 * (4-align);
+    int sr = 8 * align;
+
+    // Mix
+
+    while(len >= 4)
+    {
+      d = *(uint32_t *)data;
+      t = (t >> sr) | (d << sl);
+
+      uint32_t k = t;
+
+      MIX(h,k,m);
+
+      t = d;
+
+      data += 4;
+      len -= 4;
+    }
+
+    // Handle leftover data in temp registers
+
+    d = 0;
+
+    if(len >= align)
+    {
+      switch(align)
+      {
+      case 3: d |= data[2] << 16;
+      case 2: d |= data[1] << 8;
+      case 1: d |= data[0];
+      }
+
+      uint32_t k = (t >> sr) | (d << sl);
+      MIX(h,k,m);
+
+      data += align;
+      len -= align;
+
+      //----------
+      // Handle tail bytes
+
+      switch(len)
+      {
+      case 3: h ^= data[2] << 16;
+      case 2: h ^= data[1] << 8;
+      case 1: h ^= data[0];
+          h *= m;
+      };
+    }
+    else
+    {
+      switch(len)
+      {
+      case 3: d |= data[2] << 16;
+      case 2: d |= data[1] << 8;
+      case 1: d |= data[0];
+      case 0: h ^= (t >> sr) | (d << sl);
+          h *= m;
+      }
+    }
+
+    h ^= h >> 13;
     h *= m;
-    h ^= k;
+    h ^= h >> 15;
 
-    data += 4;
-    len -= 4;
+    return h;
   }
+  else
+  {
+    while(len >= 4)
+    {
+      uint32_t k = *(uint32_t *)data;
 
-  switch(len) {
+      MIX(h,k,m);
+
+      data += 4;
+      len -= 4;
+    }
+
+    //----------
+    // Handle tail bytes
+
+    switch(len)
+    {
     case 3: h ^= data[2] << 16;
     case 2: h ^= data[1] << 8;
     case 1: h ^= data[0];
-            h *= m;
-  };
+        h *= m;
+    };
 
-  h ^= h >> 13;
-  h *= m;
-  h ^= h >> 15;
+    h ^= h >> 13;
+    h *= m;
+    h ^= h >> 15;
 
-  return h;
+    return h;
+  }
 }
 
 VALUE
