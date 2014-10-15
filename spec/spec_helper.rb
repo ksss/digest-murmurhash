@@ -10,14 +10,12 @@ def all_classes
     MurmurHash64B,
     MurmurHashNeutral2,
     MurmurHashAligned2,
-    MurmurHash3_x86_32
+    MurmurHash3_x86_32,
+    MurmurHash3_x86_128,
+    MurmurHash3_x64_128
   ]
 end
 
-def seed32
-  (0..4).to_a.pack("C4")
-end
-
-def seed64
-  (0..8).to_a.pack("C8")
+def seed_str(klass)
+  (0..klass.seed_length).to_a.pack("C#{klass.seed_length}")
 end

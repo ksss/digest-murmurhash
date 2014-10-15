@@ -46,7 +46,7 @@ murmur_hash_process64b(const char * key, uint32_t len, uint64_t seed)
   h1 ^= h2 >> 17; h1 *= m;
   h2 ^= h1 >> 19; h2 *= m;
 
-  uint64_t h = h1;
+  uint64_t h = (uint32_t)h1;
 
   h = (h << 32) | h2;
 

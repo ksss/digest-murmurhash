@@ -13,7 +13,7 @@ describe Digest::MurmurHash do
       m = c.new
       m.update "murmurhash"
       before_digest = m.hexdigest
-      m.seed = (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
+      m.seed = seed_str(c)
       expect(c::DEFAULT_SEED).not_to eq(m.seed)
       expect(before_digest).not_to eq(m.hexdigest)
     end
@@ -33,6 +33,9 @@ describe Digest::MurmurHash do
     it { expect(Digest::MurmurHash64B.hexdigest("abc")).to eq("9d595cce51420da6") }
     it { expect(Digest::MurmurHashAligned2.hexdigest("abc")).to eq("9b7c5713") }
     it { expect(Digest::MurmurHashNeutral2.hexdigest("abc")).to eq("9b7c5713") }
+    it { expect(Digest::MurmurHash3_x86_32.hexdigest("abc")).to eq("fa93ddb3") }
+    it { expect(Digest::MurmurHash3_x86_128.hexdigest("abc")).to eq("a506b0a2a506b0a2a506b0a2d1c6cd75") }
+    it { expect(Digest::MurmurHash3_x64_128.hexdigest("abc")).to eq("4174a23b522dca263f3f96b46778ad3f") }
   end
 
   context "digest and hexdigest" do
@@ -40,7 +43,7 @@ describe Digest::MurmurHash do
       [:digest, :hexdigest].each do |method|
         str = "a" * 1024
         d = c.send(method, str)
-        d2 = c.send(method, str, (c::DEFAULT_SEED.length == 4) ? seed32 : seed64)
+        d2 = c.send(method, str, seed_str(c))
         it ("#{c}##{method}") do
           expect(d).to be_a_kind_of(String)
           expect(d2).to be_a_kind_of(String)
@@ -52,17 +55,13 @@ describe Digest::MurmurHash do
     end
   end
 
-  context "rawdigest and to_i" do
+  describe "rawdigest and to_i" do
     all_classes.each do |c|
       str = "a" * 1024
-      seed = (c::DEFAULT_SEED.length == 4) ? seed32 : seed64
+      seed = seed_str(c)
       d = c.rawdigest str
       d2 = c.rawdigest str, seed
       it(c) do
-        expect(d).to be_a_kind_of(Integer)
-        expect(d2).to be_a_kind_of(Integer)
-        expect(d).to be > 0
-        expect(d2).to be > 0
         expect(d != d2).to be_truthy
         expect(d).to eq(c.new.update(str).to_i)
         expect(d2).to eq(c.new.update(str).tap{|i| i.seed = seed}.to_i)
@@ -70,16 +69,17 @@ describe Digest::MurmurHash do
     end
   end
 
-  it "update and reset and hexdigest(32bit)" do
+  describe "update and reset and hexdigest" do
     all_classes.each do |c|
       murmur = c.new
       murmur.update("m").update("u").update("r")
       murmur << "m" << "u" << "r"
       murmur << "hash"
       hex = murmur.hexdigest
-      expect(murmur.hexdigest! == hex).to be true
-      reset_str = "0" * ((c::DEFAULT_SEED.length == 4) ? 8 : 16)
-      expect(murmur.hexdigest).to eq(reset_str)
+      it(c) do
+        expect(murmur.hexdigest! == hex).to be true
+        expect(murmur.hexdigest).to eq("0" * (murmur.digest_length*2))
+      end
     end
   end
 
@@ -105,15 +105,9 @@ describe Digest::MurmurHash do
     end
   end
 
-  it "length" do
-    all_classes.each do |c|
-      expect(c.new.length == c::DEFAULT_SEED.length).to be_truthy
-    end
-  end
-
   it "to_i" do
     all_classes.each do |c|
-      expect(c.new.update("murmurhash").to_i).to be_a_kind_of(Integer)
+      expect(c.new.update("murmurhash").to_i).to eq(c.rawdigest("murmurhash"))
     end
   end
 
@@ -122,7 +116,7 @@ describe Digest::MurmurHash do
       m1 = c.new
       m2 = c.new
       m1.update("murmurhash")
-      m1.seed = (m1.digest_length == 4) ? seed32 : seed64
+      m1.seed = seed_str(c)
       expect(m1.reset).to eq(m2)
     end
   end

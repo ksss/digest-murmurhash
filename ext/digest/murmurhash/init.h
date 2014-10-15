@@ -43,37 +43,52 @@
 #define MURMURHASH_MAGIC 0x5bd1e995
 #define MURMURHASH_MAGIC64A BIG_CONSTANT(0xc6a4a7935bd1e995)
 
-void assign_by_endian_32(uint8_t *digest, uint64_t h);
+void assign_by_endian_32(uint8_t *digest, uint32_t h);
 void assign_by_endian_64(uint8_t *digest, uint64_t h);
+void assign_by_endian_128(uint8_t*, void*);
 
-uint32_t _murmur_finish32(VALUE self, uint32_t (*process)(const char *, uint32_t, uint32_t));
-uint64_t _murmur_finish64(VALUE self, uint64_t (*process)(const char *, uint32_t, uint64_t));
-uint32_t _murmur_s_digest32(int argc, VALUE *argv, VALUE klass, uint32_t (*process)(const char *, uint32_t, uint32_t));
-uint64_t _murmur_s_digest64(int argc, VALUE *argv, VALUE klass, uint64_t (*process)(const char *, uint32_t, uint64_t));
+uint32_t rotl32(uint32_t, int8_t);
+uint64_t rotl64(uint64_t, int8_t);
+uint32_t getblock32(const uint32_t*, int);
+uint64_t getblock64(const uint64_t*, int);
+uint32_t fmix32(uint32_t);
+uint64_t fmix64(uint64_t);
+uint32_t _murmur_finish32(VALUE, uint32_t (*)(const char*, uint32_t, uint32_t));
+uint64_t _murmur_finish64(VALUE, uint64_t (*)(const char*, uint32_t, uint64_t));
+void _murmur_finish128(VALUE, void*, void (*)(const char*, uint32_t, uint32_t, void*));
+uint32_t _murmur_s_digest32(int, VALUE*, VALUE, uint32_t (*)(const char*, uint32_t, uint32_t));
+uint64_t _murmur_s_digest64(int, VALUE*, VALUE, uint64_t (*)(const char*, uint32_t, uint64_t));
+void _murmur_s_digest128(int, VALUE*, VALUE, void*, void (*)(const char*, uint32_t, uint32_t, void*));
 
-VALUE murmur1_finish(VALUE self);
-VALUE murmur1_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur1_s_rawdigest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur2_finish(VALUE self);
-VALUE murmur2_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur2_s_rawdigest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur2a_finish(VALUE self);
-VALUE murmur2a_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur2a_s_rawdigest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur64a_finish(VALUE self);
-VALUE murmur64a_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur64a_s_rawdigest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur64b_finish(VALUE self);
-VALUE murmur64b_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur64b_s_rawdigest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur_neutral2_finish(VALUE self);
-VALUE murmur_neutral2_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur_neutral2_s_rawdigest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur_aligned2_finish(VALUE self);
-VALUE murmur_aligned2_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur_aligned2_s_rawdigest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur3_x86_32_finish(VALUE self);
-VALUE murmur3_x86_32_s_digest(int argc, VALUE *argv, VALUE klass);
-VALUE murmur3_x86_32_s_rawdigest(int argc, VALUE *argv, VALUE klass);
+VALUE murmur1_finish(VALUE);
+VALUE murmur1_s_digest(int, VALUE*, VALUE);
+VALUE murmur1_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur2_finish(VALUE);
+VALUE murmur2_s_digest(int, VALUE*, VALUE);
+VALUE murmur2_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur2a_finish(VALUE);
+VALUE murmur2a_s_digest(int, VALUE*, VALUE);
+VALUE murmur2a_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur64a_finish(VALUE);
+VALUE murmur64a_s_digest(int, VALUE*, VALUE);
+VALUE murmur64a_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur64b_finish(VALUE);
+VALUE murmur64b_s_digest(int, VALUE*, VALUE);
+VALUE murmur64b_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur_neutral2_finish(VALUE);
+VALUE murmur_neutral2_s_digest(int, VALUE*, VALUE);
+VALUE murmur_neutral2_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur_aligned2_finish(VALUE);
+VALUE murmur_aligned2_s_digest(int, VALUE*, VALUE);
+VALUE murmur_aligned2_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur3_x86_32_finish(VALUE);
+VALUE murmur3_x86_32_s_digest(int, VALUE*, VALUE);
+VALUE murmur3_x86_32_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur3_x86_128_finish(VALUE);
+VALUE murmur3_x86_128_s_digest(int, VALUE*, VALUE);
+VALUE murmur3_x86_128_s_rawdigest(int, VALUE*, VALUE);
+VALUE murmur3_x64_128_finish(VALUE);
+VALUE murmur3_x64_128_s_digest(int, VALUE*, VALUE);
+VALUE murmur3_x64_128_s_rawdigest(int, VALUE*, VALUE);
 
 #endif /* ifndef MURMURHASH_INCLUDED */

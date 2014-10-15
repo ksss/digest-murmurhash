@@ -12,7 +12,7 @@ module Digest
     end
 
     def seed=(s)
-      fail ArgumentError, "seed string should #{digest_length * 16} bit chars" if s.bytesize != digest_length
+      fail ArgumentError, "seed string should be #{self.class.seed_length} length" if self.class.seed_length < s.length
       @seed = s
     end
 
@@ -23,22 +23,34 @@ module Digest
     end
   end
 
+  ds = Struct.new(:digest_length, :seed_length)
+  s1 = ds.new(4, 4)
+  s2 = ds.new(8, 8)
+  s3 = ds.new(16, 4)
   {
-    '1' => 32,
-    '2' => 32,
-    '2A' => 32,
-    '64A' => 64,
-    '64B' => 64,
-    'Aligned2' => 32,
-    'Neutral2' => 32,
-    '3_x86_32' => 32,
-  }.each do |name, size|
+    '1' => s1,
+    '2' => s1,
+    '2A' => s1,
+    '64A' => s2,
+    '64B' => s2,
+    'Aligned2' => s1,
+    'Neutral2' => s1,
+    '3_x86_32' => s1,
+    '3_x86_128' => s3,
+    '3_x64_128' => s3,
+  }.each do |name, s|
     class_eval %Q{
       class MurmurHash#{name} < MurmurHash
-        DEFAULT_SEED = "#{"\x00" * (size/8)}".encode('ASCII-8BIT')
+        DEFAULT_SEED = "#{"\x00" * s.seed_length}".encode('ASCII-8BIT')
+
+        class << self
+          def seed_length
+            #{s.seed_length}
+          end
+        end
 
         def digest_length
-          #{size/8}
+          #{s.digest_length}
         end
 
         def to_i

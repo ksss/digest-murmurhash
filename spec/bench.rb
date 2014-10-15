@@ -78,6 +78,8 @@ cases = [
   c.new("MurmurHashNeutral2", proc{|x| Digest::MurmurHashNeutral2.digest x, seed_str32 }),
   c.new("MurmurHashAligned2", proc{|x| Digest::MurmurHashAligned2.digest x, seed_str32 }),
   c.new("MurmurHash3_x86_32", proc{|x| Digest::MurmurHash3_x86_32.digest x, seed_str32 }),
+  c.new("MurmurHash3_x86_128", proc{|x| Digest::MurmurHash3_x86_128.digest x, seed_str32 }),
+  c.new("MurmurHash3_x64_128", proc{|x| Digest::MurmurHash3_x64_128.digest x, seed_str32 }),
 ]
 reals = {}
 confrict = {}

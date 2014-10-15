@@ -18,13 +18,19 @@
 
 **Digest::MurmurHashAligned2** use algorithm MurmurHashAligned2(32-bit).
 
-(**Digest::MurmurHash** is abstruct class)
+**Digest::MurmurHash3\_x86\_32** use algorithm MurmurHash3 for 32-bit platform (32-bit).
+
+**Digest::MurmurHash3\_x86\_128** use algorithm MurmurHash3 for 32-bit platform (128-bit).
+
+**Digest::MurmurHash3\_x64\_128** use algorithm MurmurHash3 for 64-bit platform (128-bit).
+
+(**Digest::MurmurHash** is a abstruct class)
 
 All classes compliance Digest API of Ruby.
 
 ## Usage
 
-You can use same interface built-in Digest::XXX classes.
+You can use same interface built-in Digest::{MD5,SH1,...} classes.
 
 ```ruby
 require 'digest/murmurhash'
@@ -57,7 +63,7 @@ n = 1000
 str = "teststrings" * 1024 * 10
 
 Benchmark.bm do |f|
-  [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A, MurmurHash64B, MurmurHashNeutral2, MurmurHashAligned2, SipHash, MD5, SHA1].each do |klass|
+  [MurmurHash1, MurmurHash2, MurmurHash2A, MurmurHash64A, MurmurHash64B, MurmurHashNeutral2, MurmurHashAligned2, MurmurHash3_x86_32, MurmurHash3_x86_128, MurmurHash3_x64_128, SipHash, MD5, SHA1].each do |klass|
     f.report(klass.to_s) {
       i = 0
       while i < n
@@ -71,16 +77,19 @@ end
 
 ```
        user     system      total        real
-Digest::MurmurHash1  0.050000   0.000000   0.050000 (  0.046694)
-Digest::MurmurHash2  0.030000   0.000000   0.030000 (  0.031258)
-Digest::MurmurHash2A  0.030000   0.000000   0.030000 (  0.032142)
-Digest::MurmurHash64A  0.020000   0.000000   0.020000 (  0.015362)
-Digest::MurmurHash64B  0.020000   0.000000   0.020000 (  0.023016)
-Digest::MurmurHashNeutral2  0.040000   0.000000   0.040000 (  0.040292)
-Digest::MurmurHashAligned2  0.040000   0.000000   0.040000 (  0.041283)
-Digest::SipHash  0.070000   0.000000   0.070000 (  0.065895)
-Digest::MD5  0.150000   0.000000   0.150000 (  0.152173)
-Digest::SHA1  0.130000   0.000000   0.130000 (  0.134543)
+Digest::MurmurHash1  0.050000   0.010000   0.060000 (  0.047889)
+Digest::MurmurHash2  0.030000   0.000000   0.030000 (  0.034564)
+Digest::MurmurHash2A  0.030000   0.010000   0.040000 (  0.031808)
+Digest::MurmurHash64A  0.010000   0.000000   0.010000 (  0.018400)
+Digest::MurmurHash64B  0.030000   0.000000   0.030000 (  0.027818)
+Digest::MurmurHashNeutral2  0.040000   0.000000   0.040000 (  0.041021)
+Digest::MurmurHashAligned2  0.020000   0.010000   0.030000 (  0.030409)
+Digest::MurmurHash3_x86_32  0.130000   0.010000   0.140000 (  0.139622)
+Digest::MurmurHash3_x86_128  0.120000   0.020000   0.140000 (  0.143768)
+Digest::MurmurHash3_x64_128  0.070000   0.010000   0.080000 (  0.072687)
+Digest::SipHash  0.060000   0.010000   0.070000 (  0.068243)
+Digest::MD5  0.130000   0.010000   0.140000 (  0.153793)
+Digest::SHA1  0.130000   0.020000   0.150000 (  0.137686)
 ```
 
 ## Installation
