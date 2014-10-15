@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MurmurHash do
+describe "Digest::MurmurHash" do
   it "gc safe" do
     all_classes.each do |c|
       murmur = c.new

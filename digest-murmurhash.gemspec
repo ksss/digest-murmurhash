@@ -16,7 +16,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.extensions    = ["ext/digest/murmurhash/extconf.rb"]
 
-  spec.add_runtime_dependency "digest-simple"
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"

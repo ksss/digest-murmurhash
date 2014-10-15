@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MurmurHash do
+describe "Digest::MurmurHash" do
   it "update nil" do
     all_classes.each do |c|
       murmur = c.new
@@ -18,8 +18,8 @@ describe MurmurHash do
     all_classes.each do |c|
       it (c) do
         expect{ c.digest "", ""}.to raise_error(ArgumentError)
-        expect{ c.digest "", "\x00" * (c.seed_length  )}.to_not raise_error
-        expect{ c.digest "", "\x00" * (c.seed_length+1)}.to raise_error(ArgumentError)
+        expect{ c.digest "", "\x00" * (c::DEFAULT_SEED.length  )}.to_not raise_error
+        expect{ c.digest "", "\x00" * (c::DEFAULT_SEED.length+1)}.to raise_error(ArgumentError)
         expect{ c.digest "", seed_str(c) }.to_not raise_error
       end
     end
@@ -30,8 +30,8 @@ describe MurmurHash do
       it (c) do
         murmur = c.new
         expect{ murmur.seed = "" }.to raise_error(ArgumentError)
-        expect{ murmur.seed = "\x00" * (c.seed_length  ) }.to_not raise_error
-        expect{ murmur.seed = "\x00" * (c.seed_length+1) }.to raise_error(ArgumentError)
+        expect{ murmur.seed = "\x00" * (c::DEFAULT_SEED.length  ) }.to_not raise_error
+        expect{ murmur.seed = "\x00" * (c::DEFAULT_SEED.length+1) }.to raise_error(ArgumentError)
         seed = seed_str(c)
         expect{ murmur.seed = seed }.to_not raise_error
       end

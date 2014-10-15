@@ -17,5 +17,5 @@ def all_classes
 end
 
 def seed_str(klass)
-  (0..klass.seed_length).to_a.pack("C#{klass.seed_length}")
+  (0..klass::DEFAULT_SEED.length).to_a.pack("C#{klass::DEFAULT_SEED.length}")
 end

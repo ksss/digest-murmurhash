@@ -1,28 +1,4 @@
-require "digest/simple"
-
 module Digest
-  class MurmurHash < Simple
-    def initialize
-      super
-      reset
-    end
-
-    def seed
-      @seed
-    end
-
-    def seed=(s)
-      fail ArgumentError, "seed string should be #{self.class.seed_length} length" if self.class.seed_length != s.length
-      @seed = s
-    end
-
-    def reset
-      super
-      @seed = self.class::DEFAULT_SEED
-      self
-    end
-  end
-
   ds = Struct.new(:digest_length, :seed_length)
   s1 = ds.new(4, 4)
   s2 = ds.new(8, 8)
@@ -40,21 +16,45 @@ module Digest
     '3_x64_128' => s3,
   }.each do |name, s|
     class_eval %Q{
-      class MurmurHash#{name} < MurmurHash
+      class MurmurHash#{name} < Digest::Class
         DEFAULT_SEED = "#{"\x00" * s.seed_length}".encode('ASCII-8BIT')
 
-        class << self
-          def seed_length
-            #{s.seed_length}
-          end
+        def initialize
+          @buffer = ""
+          @seed = DEFAULT_SEED
+        end
+
+        def update(str)
+          @buffer += str
+          self
+        end
+        alias << update
+
+        def reset
+          @buffer.clear
+          @seed = DEFAULT_SEED
+          self
+        end
+
+        def seed
+          @seed
+        end
+
+        def seed=(s)
+          fail ArgumentError, "seed string should be #{s.seed_length} length" if #{s.seed_length} != s.length
+          @seed = s
+        end
+
+        def to_i
+          self.class.rawdigest(@buffer, seed)
         end
 
         def digest_length
           #{s.digest_length}
         end
 
-        def to_i
-          self.class.rawdigest(@buffer, seed)
+        def block_length
+          0
         end
       end
     }

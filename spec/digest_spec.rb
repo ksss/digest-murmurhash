@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Digest::MurmurHash do
+describe "Digest::MurmurHash" do
   it "seed" do
     all_classes.each do |c|
       m = c.new
