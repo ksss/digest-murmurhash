@@ -12,7 +12,7 @@ module Digest
     end
 
     def seed=(s)
-      fail ArgumentError, "seed string should be #{self.class.seed_length} length" if self.class.seed_length < s.length
+      fail ArgumentError, "seed string should be #{self.class.seed_length} length" if self.class.seed_length != s.length
       @seed = s
     end
 

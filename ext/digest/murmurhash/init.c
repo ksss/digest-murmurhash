@@ -162,7 +162,7 @@ _murmur_s_digest32(int argc, VALUE *argv, VALUE klass, uint32_t (*process)(const
   if (1 < argc) {
     StringValue(argv[1]);
     if (RSTRING_LEN(argv[1]) != 4) {
-      rb_raise(rb_eArgError, "seed string should 32 bit chars");
+      rb_raise(rb_eArgError, "seed string should be 4 length");
     }
     seed = RSTRING_PTR(argv[1]);
   } else {
@@ -188,7 +188,7 @@ _murmur_s_digest64(int argc, VALUE *argv, VALUE klass, uint64_t (*process)(const
   if (1 < argc) {
     StringValue(argv[1]);
     if (RSTRING_LEN(argv[1]) != 8) {
-      rb_raise(rb_eArgError, "seed string should 64 bit chars");
+      rb_raise(rb_eArgError, "seed string should be 8 length");
     }
     seed = RSTRING_PTR(argv[1]);
   } else {
