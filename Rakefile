@@ -12,7 +12,7 @@ task :spec => :compile
 
 require 'rake/extensiontask'
 spec = Bundler::GemHelper.gemspec
-Rake::ExtensionTask.new('murmurhash', spec) do |ext|
+Rake::ExtensionTask.new('ext', spec) do |ext|
   ext.ext_dir = 'ext/digest/murmurhash'
   ext.lib_dir = 'lib/digest/murmurhash'
 end

@@ -1,3 +1,3 @@
 require "digest"
 require "digest/murmurhash/base"
-require "digest/murmurhash/murmurhash"
+require "digest/murmurhash/ext"

@@ -227,7 +227,7 @@ _murmur_s_digest128(int argc, VALUE *argv, VALUE klass, void *out, void (*proces
 
 
 void
-Init_murmurhash(void)
+Init_ext(void)
 {
   id_DEFAULT_SEED = rb_intern("DEFAULT_SEED");
   iv_seed = rb_intern("@seed");

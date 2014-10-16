@@ -1,3 +1,3 @@
 require 'mkmf'
 
-create_makefile('digest/murmurhash/murmurhash')
+create_makefile('digest/murmurhash/ext')
