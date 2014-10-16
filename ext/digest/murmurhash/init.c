@@ -1,15 +1,5 @@
 #include "init.h"
 
-VALUE cDigest_MurmurHash1,
-      cDigest_MurmurHash2,
-      cDigest_MurmurHash2A,
-      cDigest_MurmurHash64A,
-      cDigest_MurmurHash64B,
-      cDigest_MurmurHashNeutral2,
-      cDigest_MurmurHashAligned2,
-      cDigest_MurmurHash3_x86_32,
-      cDigest_MurmurHash3_x86_128,
-      cDigest_MurmurHash3_x64_128;
 ID id_DEFAULT_SEED;
 ID iv_seed;
 ID iv_buffer;
@@ -229,6 +219,17 @@ _murmur_s_digest128(int argc, VALUE *argv, VALUE klass, void *out, void (*proces
 void
 Init_ext(void)
 {
+  VALUE cDigest_MurmurHash1,
+        cDigest_MurmurHash2,
+        cDigest_MurmurHash2A,
+        cDigest_MurmurHash64A,
+        cDigest_MurmurHash64B,
+        cDigest_MurmurHashNeutral2,
+        cDigest_MurmurHashAligned2,
+        cDigest_MurmurHash3_x86_32,
+        cDigest_MurmurHash3_x86_128,
+        cDigest_MurmurHash3_x64_128;
+
   id_DEFAULT_SEED = rb_intern("DEFAULT_SEED");
   iv_seed = rb_intern("@seed");
   iv_buffer = rb_intern("@buffer");
