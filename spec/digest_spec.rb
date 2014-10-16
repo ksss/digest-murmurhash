@@ -55,7 +55,7 @@ describe "Digest::MurmurHash" do
     end
   end
 
-  describe "rawdigest and to_i" do
+  describe "rawdigest" do
     all_classes.each do |c|
       str = "a" * 1024
       seed = seed_str(c)
@@ -63,8 +63,6 @@ describe "Digest::MurmurHash" do
       d2 = c.rawdigest str, seed
       it(c) do
         expect(d != d2).to be_truthy
-        expect(d).to eq(c.new.update(str).to_i)
-        expect(d2).to eq(c.new.update(str).tap{|i| i.seed = seed}.to_i)
       end
     end
   end
@@ -102,12 +100,6 @@ describe "Digest::MurmurHash" do
       }
       murmur2.update(("murmurhash" * 100) * 10)
       expect(murmur1).to eq(murmur2)
-    end
-  end
-
-  it "to_i" do
-    all_classes.each do |c|
-      expect(c.new.update("murmurhash").to_i).to eq(c.rawdigest("murmurhash"))
     end
   end
 

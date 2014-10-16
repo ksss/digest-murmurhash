@@ -45,10 +45,6 @@ module Digest
           @seed = s
         end
 
-        def to_i
-          self.class.rawdigest(@buffer, seed)
-        end
-
         def digest_length
           #{s.digest_length}
         end
