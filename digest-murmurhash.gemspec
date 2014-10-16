@@ -2,12 +2,12 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "digest-murmurhash"
-  spec.version       = "1.0.0"
-  spec.author        = "ksss"
-  spec.email         = "co000ri@gmail.com"
-  spec.description   = %q{Digest::MurmurHash is class collections of use algorithm MurmurHash desiged by Austin Appleby.}
-  spec.summary       = %q{Digest::MurmurHash is class collections of use algorithm MurmurHash desiged by Austin Appleby.}
-  spec.homepage      = ""
+  spec.version       = "1.1.0"
+  spec.authors       = ["ksss"]
+  spec.email         = ["co000ri@gmail.com"]
+  spec.description   = %q{digest-murmurhash is class collections of use algorithm MurmurHash desiged by Austin Appleby.}
+  spec.summary       = %q{digest-murmurhash is class collections of use algorithm MurmurHash desiged by Austin Appleby.}
+  spec.homepage      = "https://github.com/ksss/digest-murmurhash"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
