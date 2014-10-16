@@ -32,21 +32,23 @@ All classes compliance Digest API of Ruby.
 
 ## Usage
 
-You can use same interface built-in Digest::{MD5,SH1,...} classes.
-
 ```ruby
 require 'digest/murmurhash'
 
 # MurmurHash1 can use like same than Digest::XXX.
 
-p Digest::MurmurHash1.hexdigest('murmurhash')
-p Digest::MurmurHash1.file("./LICENSE.txt").hexdigest
+p Digest::MurmurHash1.hexdigest('murmurhash') #=> d5ab09c7
+p Digest::MurmurHash1.digest('murmurhash') #=> \xD5\xAB\x09\xC7
+p Digest::MurmurHash1.rawdigest('murmurhash') #=> 3339299797
+p Digest::MurmurHash1.file("./LICENSE.txt").hexdigest #=> "41962e71"
 
-# and MurmurHash2 too. but return another value because using another algorithm.
-
-p Digest::MurmurHash2.hexdigest('murmurhash')
-p Digest::MurmurHash2.file("./LICENSE.txt").hexdigest
 ```
+
+## Feature
+
+- Very fast because hash algorithm is written by C extention
+- You can try *all* Hurmurhash algorithms
+- You can use same interface built-in Digest::{MD5,SH1,...} classes.
 
 ## Simple benchmark
 
