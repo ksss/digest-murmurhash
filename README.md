@@ -4,27 +4,29 @@
 
 **MurmurHash** is a algorithm desiged by Austin Appleby.
 
-**Digest::MurmurHash1** use algorithm MurmurHash1(32-bit).
+This library have some classes for MurmurHash algorithm.
 
-**Digest::MurmurHash2** use algorithm MurmurHash2(32-bit).
+- **Digest::MurmurHash1** use algorithm MurmurHash1(32-bit).
 
-**Digest::MurmurHash2A** use algorithm MurmurHash2A(32-bit).
+- **Digest::MurmurHash2** use algorithm MurmurHash2(32-bit).
 
-**Digest::MurmurHash64A** use algorithm MurmurHash64A(64-bit).
+- **Digest::MurmurHash2A** use algorithm MurmurHash2A(32-bit).
 
-**Digest::MurmurHash64B** use algorithm MurmurHash64B(64-bit).
+- **Digest::MurmurHash64A** use algorithm MurmurHash64A(64-bit).
 
-**Digest::MurmurHashNeutral2** use algorithm MurmurHashNeutral2(32-bit).
+- **Digest::MurmurHash64B** use algorithm MurmurHash64B(64-bit).
 
-**Digest::MurmurHashAligned2** use algorithm MurmurHashAligned2(32-bit).
+- **Digest::MurmurHashNeutral2** use algorithm MurmurHashNeutral2(32-bit).
 
-**Digest::MurmurHash3\_x86\_32** use algorithm MurmurHash3 for 32-bit platform (32-bit).
+- **Digest::MurmurHashAligned2** use algorithm MurmurHashAligned2(32-bit).
 
-**Digest::MurmurHash3\_x86\_128** use algorithm MurmurHash3 for 32-bit platform (128-bit).
+- **Digest::MurmurHash3\_x86\_32** use algorithm MurmurHash3 for 32-bit platform (32-bit).
 
-**Digest::MurmurHash3\_x64\_128** use algorithm MurmurHash3 for 64-bit platform (128-bit).
+- **Digest::MurmurHash3\_x86\_128** use algorithm MurmurHash3 for 32-bit platform (128-bit).
 
-(**Digest::MurmurHash** is a abstruct class)
+- **Digest::MurmurHash3\_x64\_128** use algorithm MurmurHash3 for 64-bit platform (128-bit).
+
+(**Digest::MurmurHash** class was nothing)
 
 All classes compliance Digest API of Ruby.
 
