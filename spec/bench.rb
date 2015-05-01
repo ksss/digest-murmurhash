@@ -4,6 +4,9 @@ lib = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'digest/murmurhash'
+require 'digest/md5'
+require 'digest/sha1'
+require 'openssl'
 require 'benchmark'
 
 @rands = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(//)
@@ -15,53 +18,6 @@ def rand_str length
   rand
 end
 
-class Integer
-  def to_32
-    self & 0xffffffff
-  end
-end
-
-def murmur_hash str, seed
-  data = str.dup.unpack("C*")
-  m = 0x5bd1e995
-  r = 16
-  length = str.bytesize
-  h = (seed ^ (length * m).to_32).to_32
-
-  while 4 <= length
-    d = data.shift(4).pack("C*").unpack("I")[0]
-    h = (h + d).to_32
-    h = (h * m).to_32
-    h ^= h >> r
-    length -= 4
-  end
-
-  if 2 < length
-    h = (h + (data[2] << 16).to_32).to_32
-  end
-  if 1 < length
-    h = (h + (data[1] << 8).to_32).to_32
-  end
-  if 0 < length
-    h = (h + data[0]).to_32
-    h = (h * m).to_32
-    h ^= h >> r
-  end
-
-  h = (h * m).to_32
-  h ^= h >> 10
-  h = (h * m).to_32
-  h ^= h >> 17
-
-  h
-end
-
-n = 100000
-
-a = Array.new(n, 0)
-n.times do |i|
-  a[i] = rand_str 20
-end
 seed = rand(2**32)
 seed_str32 = [seed].pack("L")
 seed_str64 = [seed].pack("Q")
@@ -69,7 +25,6 @@ c = Struct.new "Cases",
                :name,
                :func
 cases = [
-  c.new("pureRuby", proc{|x| murmur_hash x, seed }),
   c.new("MurmurHash1", proc{|x| Digest::MurmurHash1.digest x, seed_str32 }),
   c.new("MurmurHash2", proc{|x| Digest::MurmurHash2.digest x, seed_str32 }),
   c.new("MurmurHash2A", proc{|x| Digest::MurmurHash2A.digest x, seed_str32 }),
@@ -80,20 +35,35 @@ cases = [
   c.new("MurmurHash3_x86_32", proc{|x| Digest::MurmurHash3_x86_32.digest x, seed_str32 }),
   c.new("MurmurHash3_x86_128", proc{|x| Digest::MurmurHash3_x86_128.digest x, seed_str32 }),
   c.new("MurmurHash3_x64_128", proc{|x| Digest::MurmurHash3_x64_128.digest x, seed_str32 }),
+  c.new("Digest::MD5", proc{|x| Digest::MD5.digest x }),
+  c.new("Digest::SHA1", proc{|x| Digest::SHA1.digest x }),
+  c.new("Digest::SHA256", proc{|x| Digest::SHA256.digest x }),
+  c.new("Digest::SHA2", proc{|x| Digest::SHA2.digest x }),
+  c.new("OpenSSL::HMAC(sha256)", proc{|x| OpenSSL::HMAC.digest "sha256", seed_str32, x }),
+  c.new("Base64", proc{|x| [x].pack("m0") }),
 ]
-reals = {}
+
 confrict = {}
 confricts = {}
+
+n = 100
+a = Array.new(n, 0)
+n.times do |i|
+  a[i] = rand_str(1024*1024)
+end
 
 puts "### condition"
 puts
 puts "    RUBY_VERSION = #{RUBY_VERSION}"
 puts "    count = #{n}"
+puts "    data size = #{a[0].length / 1024} KB"
 puts
 puts "### benchmark"
 puts
 puts "```"
+
 Benchmark.bm do |x|
+  GC.start
   cases.each do |c|
     i = 0
     z = x.report c.name do
@@ -115,18 +85,10 @@ Benchmark.bm do |x|
       end
       i += 1
     end
-    reals[c.name] = z.real
     confricts[c.name] = confrict.count{|hash, count| 0 < count}
   end
 end
 puts "```"
-
-puts
-puts "### real second rate (pureRuby/)"
-puts
-reals.each do |name, real|
-  puts "    " + (reals["pureRuby"] / real).to_s + "/" + name
-end
 
 puts
 puts "### confrict count (/#{n})"
