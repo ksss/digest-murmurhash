@@ -62,42 +62,23 @@ $ bundle ex ruby spec/bench.rb
 
 ### benchmark
 
-       user     system      total        real
-MurmurHash1  0.060000   0.010000   0.070000 (  0.057101)
-MurmurHash2  0.040000   0.000000   0.040000 (  0.037733)
-MurmurHash2A  0.030000   0.000000   0.030000 (  0.032092)
-MurmurHash64A  0.020000   0.000000   0.020000 (  0.015846)
-MurmurHash64B  0.030000   0.000000   0.030000 (  0.025016)
-MurmurHashNeutral2  0.040000   0.000000   0.040000 (  0.040506)
-MurmurHashAligned2  0.030000   0.000000   0.030000 (  0.032861)
-MurmurHash3_x86_32  0.110000   0.000000   0.110000 (  0.115907)
-MurmurHash3_x86_128  0.120000   0.000000   0.120000 (  0.122998)
-MurmurHash3_x64_128  0.070000   0.000000   0.070000 (  0.067370)
-Digest::MD5  0.160000   0.000000   0.160000 (  0.159022)
-Digest::SHA1  0.100000   0.000000   0.100000 (  0.100250)
-Digest::SHA256  0.230000   0.000000   0.230000 (  0.224595)
-Digest::SHA2  0.220000   0.000000   0.220000 (  0.228883)
-OpenSSL::HMAC(sha256)  0.220000   0.000000   0.220000 (  0.227799)
-Base64  0.130000   0.060000   0.190000 (  0.190484)
-
-### confrict count (/100)
-
-    MurmurHash1: 0
-    MurmurHash2: 0
-    MurmurHash2A: 0
-    MurmurHash64A: 0
-    MurmurHash64B: 0
-    MurmurHashNeutral2: 0
-    MurmurHashAligned2: 0
-    MurmurHash3_x86_32: 0
-    MurmurHash3_x86_128: 0
-    MurmurHash3_x64_128: 0
-    Digest::MD5: 0
-    Digest::SHA1: 0
-    Digest::SHA256: 0
-    Digest::SHA2: 0
-    OpenSSL::HMAC(sha256): 0
-    Base64: 0
+MurmurHash1	0.05145844700746238
+MurmurHash2	0.03399810096016154
+MurmurHash2A	0.032202123024035245
+MurmurHash64A	0.01880742999492213
+MurmurHash64B	0.02227930899243802
+MurmurHashNeutral2	0.04134096298366785
+MurmurHashAligned2	0.03514020598959178
+MurmurHash3_x86_32	0.1174831380485557
+MurmurHash3_x86_128	0.1244338889955543
+MurmurHash3_x64_128	0.07122775202151388
+Digest::MD5	0.1401238819817081
+Digest::SHA1	0.09980463003739715
+Digest::SHA256	0.2248609460075386
+Digest::SHA2	0.2245309569989331
+OpenSSL::HMAC(sha256)	0.23656713595846668
+Base64	0.1765239799860865
+Zlib.crc32	0.009485946036875248
 ```
 
 ## Installation

@@ -7,6 +7,7 @@ require 'digest/murmurhash'
 require 'digest/md5'
 require 'digest/sha1'
 require 'openssl'
+require 'zlib'
 require 'benchmark'
 
 @rands = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(//)
@@ -41,6 +42,7 @@ cases = [
   c.new("Digest::SHA2", proc{|x| Digest::SHA2.digest x }),
   c.new("OpenSSL::HMAC(sha256)", proc{|x| OpenSSL::HMAC.digest "sha256", seed_str32, x }),
   c.new("Base64", proc{|x| [x].pack("m0") }),
+  c.new("Zlib.crc32", proc{|x| Zlib.crc32(x) }),
 ]
 
 confrict = {}
@@ -62,31 +64,30 @@ puts "### benchmark"
 puts
 puts "```"
 
-Benchmark.bm do |x|
-  GC.start
-  cases.each do |c|
-    i = 0
-    z = x.report c.name do
-      while i < n
-        c.func.call(a[i])
-        i += 1
-      end
-    end
-
-    confrict.clear
-
-    i = 0
+GC.start
+cases.each do |c|
+  i = 0
+  b = Benchmark.realtime do
     while i < n
-      rethash = c.func.call(a[i])
-      if confrict[rethash].nil?
-        confrict[rethash] = 0
-      else
-        confrict[rethash] += 1
-      end
+      c.func.call(a[i])
       i += 1
     end
-    confricts[c.name] = confrict.count{|hash, count| 0 < count}
   end
+  puts "#{c.name}\t#{b}"
+
+  confrict.clear
+
+  i = 0
+  while i < n
+    rethash = c.func.call(a[i])
+    if confrict[rethash].nil?
+      confrict[rethash] = 0
+    else
+      confrict[rethash] += 1
+    end
+    i += 1
+  end
+  confricts[c.name] = confrict.count{|hash, count| 0 < count}
 end
 puts "```"
 
