@@ -17,7 +17,7 @@ module Digest
   }.each do |name, s|
     class_eval %Q{
       class MurmurHash#{name} < Digest::Class
-        DEFAULT_SEED = "#{"\x00" * s.seed_length}".encode('ASCII-8BIT')
+        DEFAULT_SEED = "#{"\x00" * s.seed_length}".b
 
         def initialize
           @buffer = ""
