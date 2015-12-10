@@ -25,7 +25,7 @@ module Digest
         end
 
         def update(str)
-          @buffer += str
+          @buffer << str
           self
         end
         alias << update
