@@ -41,7 +41,7 @@ module Digest
         end
 
         def seed=(s)
-          fail ArgumentError, "seed string should be #{s.seed_length} length" if #{s.seed_length} != s.length
+          raise ArgumentError, "seed string should be #{s.seed_length} length" if #{s.seed_length} != s.length
           @seed = s
         end
 
