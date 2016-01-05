@@ -48,10 +48,10 @@ cases = [
 confrict = {}
 confricts = {}
 
-n = 100
+n = 1000
 a = Array.new(n, 0)
 n.times do |i|
-  a[i] = rand_str(1024*1024)
+  a[i] = rand_str(100*1024)
 end
 
 puts "### condition"
