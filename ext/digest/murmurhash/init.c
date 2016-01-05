@@ -111,13 +111,22 @@ assign_by_endian_128(uint8_t *digest, void *out)
   }
 }
 
+static uint32_t
+rstring2uint32_t(VALUE str)
+{
+  long len = RSTRING_LEN(str);
+  if (UINT32_MAX < len) {
+    rb_raise(rb_eRangeError, "String length=%ld will overflow from long to uint32_t", len);
+  }
+  return (uint32_t)len;
+}
 
 uint32_t
 _murmur_finish32(VALUE self, uint32_t (*process)(const char*, uint32_t, uint32_t))
 {
   const char *seed = RSTRING_PTR(rb_ivar_get(self, iv_seed));
   VALUE buffer = rb_ivar_get(self, iv_buffer);
-  return process(RSTRING_PTR(buffer), RSTRING_LEN(buffer), *(uint32_t*)seed);
+  return process(RSTRING_PTR(buffer), rstring2uint32_t(buffer), *(uint32_t*)seed);
 }
 
 uint64_t
@@ -125,7 +134,7 @@ _murmur_finish64(VALUE self, uint64_t (*process)(const char*, uint32_t, uint64_t
 {
   const char *seed = RSTRING_PTR(rb_ivar_get(self, iv_seed));
   VALUE buffer = rb_ivar_get(self, iv_buffer);
-  return process(RSTRING_PTR(buffer), RSTRING_LEN(buffer), *(uint64_t*)seed);
+  return process(RSTRING_PTR(buffer), rstring2uint32_t(buffer), *(uint64_t*)seed);
 }
 
 void
@@ -133,7 +142,7 @@ _murmur_finish128(VALUE self, void *out, void (*process)(const char*, uint32_t, 
 {
   const char *seed = RSTRING_PTR(rb_ivar_get(self, iv_seed));
   VALUE buffer = rb_ivar_get(self, iv_buffer);
-  process(RSTRING_PTR(buffer), RSTRING_LEN(buffer), *(uint32_t*)seed, out);
+  process(RSTRING_PTR(buffer), rstring2uint32_t(buffer), *(uint32_t*)seed, out);
 }
 
 uint32_t
@@ -159,7 +168,7 @@ _murmur_s_digest32(int argc, VALUE *argv, VALUE klass, uint32_t (*process)(const
     seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
   }
 
-  return process(RSTRING_PTR(str), RSTRING_LEN(str), *(uint32_t*)seed);
+  return process(RSTRING_PTR(str), rstring2uint32_t(str), *(uint32_t*)seed);
 }
 
 uint64_t
@@ -185,7 +194,7 @@ _murmur_s_digest64(int argc, VALUE *argv, VALUE klass, uint64_t (*process)(const
     seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
   }
 
-  return process(RSTRING_PTR(str), RSTRING_LEN(str), *(uint64_t*)seed);
+  return process(RSTRING_PTR(str), rstring2uint32_t(str), *(uint64_t*)seed);
 }
 
 void
@@ -212,7 +221,7 @@ _murmur_s_digest128(int argc, VALUE *argv, VALUE klass, void *out, void (*proces
     seed = RSTRING_PTR(rb_const_get(klass, id_DEFAULT_SEED));
   }
 
-  process(RSTRING_PTR(str), RSTRING_LEN(str), *(uint32_t*)seed, out);
+  process(RSTRING_PTR(str), rstring2uint32_t(str), *(uint32_t*)seed, out);
 }
 
 
