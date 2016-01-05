@@ -16,7 +16,7 @@ murmur_hash_process_aligned2(const char * key, uint32_t len, uint32_t seed)
 
   uint32_t h = seed ^ len;
 
-  int align = (uint64_t)data & 3;
+  uint32_t align = (uint64_t)data & 3;
 
   if(align && (len >= 4))
   {
