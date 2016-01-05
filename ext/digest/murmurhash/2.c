@@ -44,7 +44,7 @@ VALUE
 murmur2_finish(VALUE self)
 {
   uint8_t digest[4];
-  uint64_t h;
+  uint32_t h;
 
   h = _murmur_finish32(self, murmur_hash_process2);
   assign_by_endian_32(digest, h);

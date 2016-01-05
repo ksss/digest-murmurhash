@@ -150,7 +150,7 @@ VALUE
 murmur_aligned2_s_digest(int argc, VALUE *argv, VALUE klass)
 {
   uint8_t digest[4];
-  uint64_t h;
+  uint32_t h;
   h = _murmur_s_digest32(argc, argv, klass, murmur_hash_process_aligned2);
   assign_by_endian_32(digest, h);
   return rb_str_new((const char*) digest, 4);
