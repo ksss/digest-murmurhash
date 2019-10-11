@@ -39,47 +39,53 @@ require 'digest/murmurhash'
 
 p Digest::MurmurHash1.hexdigest('murmurhash') #=> d5ab09c7
 p Digest::MurmurHash1.digest('murmurhash') #=> \xD5\xAB\x09\xC7
-p Digest::MurmurHash1.rawdigest('murmurhash') #=> 3339299797
 p Digest::MurmurHash1.file("./LICENSE.txt").hexdigest #=> "41962e71"
 
+# Original method for performance
+p Digest::MurmurHash1.rawdigest('murmurhash') #=> 3339299797
 ```
 
 ## Feature
 
 - Very fast because hash algorithm is written by C extention
 - You can try *all* Hurmurhash algorithms
-- You can use same interface built-in Digest::{MD5,SH1,...} classes.
+- You can use same interface built-in Digest::{MD5,SH1,...} classes because each class inherited [Digest::Class](https://ruby-doc.org/stdlib-2.6.5/libdoc/digest/rdoc/Digest/Class.html).
 
 ## Benchmark
 
+call `Digest::XXX.digest` (see also spec/bench.rb)
+
 ```
-$ bundle ex ruby spec/bench.rb
+$ bundle exec ruby spec/bench.rb
 ### condition
 
-    RUBY_VERSION = 2.3.0
+    RUBY_VERSION = 2.6.5
     count = 1000
     data size = 100 KB
 
 ### benchmark
 
-MurmurHash1	0.16074114001821727
-MurmurHash2	0.10484590596752241
-MurmurHash2A	0.11195178102934733
-MurmurHash64A	0.057314220000989735
-MurmurHash64B	0.0911051009898074
-MurmurHashNeutral2	0.164784726977814
-MurmurHashAligned2	0.11094380798749626
-MurmurHash3_x86_32	0.2993663040106185
-MurmurHash3_x86_128	0.26751064899144694
-MurmurHash3_x64_128	0.14950793702155352
-Digest::MD5	0.1364029649994336
-Digest::SHA1	0.105117603961844
-Digest::SHA256	0.21450808201916516
-Digest::SHA2	0.22369682899443433
-OpenSSL::HMAC(sha256)	0.21367766003822908
-Base64	0.17364867898868397
-Zlib.crc32	0.009028148022480309
+MurmurHash1	0.04397099930793047
+MurmurHash2	0.030599999241530895
+MurmurHash2A	0.03052499983459711
+MurmurHash64A	0.014573999680578709
+MurmurHash64B	0.027068999595940113
+MurmurHashNeutral2	0.028548000380396843
+MurmurHashAligned2	0.03340199962258339
+MurmurHash3_x86_32	0.08531500026583672
+MurmurHash3_x86_128	0.10534099955111742
+MurmurHash3_x64_128	0.05008100066334009
+Digest::MD5	0.1293069999665022
+Digest::SHA1	0.10616999957710505
+Digest::SHA256	0.23746399953961372
+Digest::SHA2	0.23401100002229214
+OpenSSL::HMAC(sha256)	0.23477800004184246
+Base64	0.1534709995612502
+Zlib.crc32	0.008456000126898289
 ```
+
+![image](https://user-images.githubusercontent.com/935310/66634606-618de380-ec48-11e9-98ba-36f19152c951.png)
+
 
 ## Installation
 
