@@ -1,7 +1,5 @@
 # Digest::MurmurHash
 
-[![Build Status](https://travis-ci.org/ksss/digest-murmurhash.png?branch=master)](https://travis-ci.org/ksss/digest-murmurhash)
-
 **MurmurHash** is a algorithm desiged by Austin Appleby.
 
 This library have some classes for MurmurHash algorithm.
